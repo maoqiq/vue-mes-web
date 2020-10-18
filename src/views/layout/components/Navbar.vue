@@ -2,22 +2,7 @@
   <el-menu class="navbar" mode="horizontal">
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
     <breadcrumb></breadcrumb>
-    <el-dropdown class="avatar-container" trigger="click">
-      <div class="avatar-wrapper">
-        <img class="user-avatar" :src="avatar">
-        <i class="el-icon-caret-bottom"></i>
-      </div>
-      <el-dropdown-menu class="user-dropdown" slot="dropdown">
-        <router-link class="inlineBlock" to="/">
-          <el-dropdown-item>
-            首页
-          </el-dropdown-item>
-        </router-link>
-        <el-dropdown-item divided>
-          <span @click="logout" style="display:block;">退出</span>
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
+    <span v-if="showBoardDate" class="board-date">当天（2020.09.28 00:00 - 2020.09.28 24:00）</span>
   </el-menu>
 </template>
 
@@ -37,6 +22,16 @@ export default {
       'avatar'
     ])
   },
+  data() {
+    return {
+      showBoardDate: true
+    }
+  },
+  watch: {
+    $route() {
+      this.handleBoardDate()
+    }
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
@@ -45,6 +40,15 @@ export default {
       this.$store.dispatch('LogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
+    },
+    handleBoardDate() {
+      let parentMatched = this.$route.matched.filter(item => item.name)[0]
+      console.log(parentMatched)
+      if(parentMatched.meta.title === "看板"){
+        this.showBoardDate = true
+      } else {
+        this.showBoardDate = false
+      }
     }
   }
 }
@@ -55,39 +59,17 @@ export default {
   height: 50px;
   line-height: 50px;
   border-radius: 0px !important;
+  display: flex;
   .hamburger-container {
     line-height: 58px;
     height: 50px;
     float: left;
     padding: 0 10px;
   }
-  .screenfull {
-    position: absolute;
-    right: 90px;
-    top: 16px;
-    color: red;
-  }
-  .avatar-container {
-    height: 50px;
-    display: inline-block;
-    position: absolute;
-    right: 35px;
-    .avatar-wrapper {
-      cursor: pointer;
-      margin-top: 5px;
-      position: relative;
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-      }
-      .el-icon-caret-bottom {
-        position: absolute;
-        right: -20px;
-        top: 25px;
-        font-size: 12px;
-      }
-    }
+  .board-date {
+    padding-left: 12px;
+    color: #101010;
+    font-size: 14px;
   }
 }
 </style>
