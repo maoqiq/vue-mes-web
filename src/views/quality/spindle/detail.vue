@@ -29,7 +29,7 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="16">
+            <el-col :span="7">
               <el-form-item label="班次编号：">
                 <el-select v-model="listQuery.classesNo" placeholder="全部" clearable>
                   <el-option
@@ -39,6 +39,11 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="9">
+              <el-form-item label="纱锭编号：">
+                <el-input style="width: 203px" v-model="listQuery.spindleNo" placeholder="纱锭编号"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="5">
@@ -70,45 +75,45 @@
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="气流纺机序号" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.id}}</template>
+        <el-table-column label="锭位号码（ROT）" width="150" align="center">
+          <template slot-scope="scope">{{scope.row.rotId}}</template>
+        </el-table-column>
+        <el-table-column label="状态" width="128" align="center">
+          <template slot-scope="scope">{{scope.row.status}}</template>
         </el-table-column>
         <el-table-column label="时间" align="center">
-          <template slot-scope="scope">{{scope.row.date}}</template>
+          <template slot-scope="scope">
+            {{scope.row.date}}
+          </template>
         </el-table-column>
         <el-table-column label="班次" width="128" align="center">
           <template slot-scope="scope">
             {{scope.row.classes}}
           </template>
         </el-table-column>
-        <el-table-column label="品种" width="128" align="center">
+        <el-table-column label="电清切疵总数（YC）" width="160" align="center">
           <template slot-scope="scope">
-            {{scope.row.type}}
+            {{scope.row.ycSum}}
           </template>
         </el-table-column>
-        <el-table-column label="效率" width="128" align="center">
-          <template slot-scope="scope">
-            {{scope.row.efficiency}}
-          </template>
+        <el-table-column label="接头数（PI）" width="128" align="center">
+          <template slot-scope="scope">{{scope.row.piSum}}</template>
         </el-table-column>
-        <el-table-column label="产量" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.myield}}</template>
+        <el-table-column label="效率（EFF）" width="128" align="center">
+          <template slot-scope="scope">{{scope.row.effSum}}</template>
         </el-table-column>
-        <el-table-column label="接头数" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.piNum}}</template>
+        <el-table-column label="异常班次（SH）" width="128" align="center">
+          <template slot-scope="scope">{{scope.row.shSum}}</template>
         </el-table-column>
-        <el-table-column label="设备状态" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.status}}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="228" align="center">
+        <el-table-column label="操作" width="220" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleJumpOriginData(scope.$index, scope.row)">查看原数据
+              @click="handleJumpDetail(scope.$index, scope.row)">查看详情
             </el-button>
             <el-button
               size="mini" type="primary"
-              @click="handleJumpSpindleList(scope.$index, scope.row)">查看纱锭
+              @click="handleCreateRepair(scope.$index, scope.row)">报修
             </el-button>
           </template>
         </el-table-column>
@@ -140,7 +145,7 @@
   import {fetchList as fetchProductAttrList} from '@/api/productAttr'
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {fetchListWithChildren} from '@/api/productCate'
-  import machineListMockData from '@/mock/machineList.js'
+  import spindleListMockData from '@/mock/spindleList.js'
 
   const defaultListQuery = {
     keyword: null,
@@ -148,13 +153,14 @@
     pageSize: 5,
     machineIds: null,
     timeValue: null,
-    classesNo: null
+    classesNo: null,
+    spindleNo:null
   };
   export default {
     name: "productList",
     data() {
       return {
-        machineListMockData,
+        spindleListMockData,
         listQuery: Object.assign({}, defaultListQuery),
         machineList: [],
         total: null,
@@ -178,7 +184,6 @@
       }
     },
     created() {
-      console.log(this.machineListMockData);
       this.getList();
       this.getMachineNoList()
     },
@@ -199,7 +204,7 @@
       getList() {
         this.machineList = [];
         for (let i = 0; i < 20; i++) {
-          this.machineList.push(this.machineListMockData);
+          this.machineList.push(this.spindleListMockData);
           this.total = 50;
         }
         console.log(this.machineList)
@@ -247,11 +252,11 @@
         this.multipleSelection = val;
       },
 
-      handleJumpOriginData(index,row){
+      handleJumpDetail(index,row){
         console.log("handleShowOriginData",row);
         this.$router.push({path:'/quality/sourceData',query:{id:row.id}})
       },
-      handleJumpSpindleList(index,row){
+      handleCreateRepair(index,row){
         this.$router.push({path:'/quality/spindle',query:{id:row.id}});
       }
     }

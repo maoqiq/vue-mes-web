@@ -77,15 +77,14 @@ export const asyncRouterMap = [
       {
         path: 'spindle',
         name: 'spindle',
-        component: () => import('@/views/pms/product/add'),
+        component: () => import('@/views/quality/spindle/index'),
         meta: {title: '纱锭列表', icon: 'product-list'}
       },
       {
         path: 'spindleDetail',
         name: 'spindleDetail',
-        component: () => import('@/views/pms/product/update'),
+        component: () => import('@/views/quality/spindle/detail'),
         meta: {title: '纱锭详情'},
-        hidden: true
       },
       {
         path: 'warning',
@@ -98,14 +97,12 @@ export const asyncRouterMap = [
         name: 'sourceData',
         component: () => import('@/views/pms/productCate/add'),
         meta: {title: '原数据展示', icon: 'order-return'},
-        hidden: true
       },
       {
         path: 'setting',
         name: 'setting',
         component: () => import('@/views/pms/productCate/update'),
         meta: {title: '指标配置', icon: 'order-setting'},
-        hidden: true
       },
       {
         path: 'repair',
@@ -116,7 +113,7 @@ export const asyncRouterMap = [
       {
         path: 'repairCreate',
         name: 'rrepairCreate',
-        component: () => import('@/views/pms/productAttr/index'),
+        component: () => import('@/views/quality/spindle/detail'),
         meta: {title: '新建维修单'}
       }
     ]
