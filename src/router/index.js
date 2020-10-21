@@ -89,7 +89,7 @@ export const asyncRouterMap = [
       {
         path: 'warning',
         name: 'warning',
-        component: () => import('@/views/pms/productCate/index'),
+        component: () => import('@/views/quality/warning/index'),
         meta: {title: '预警', icon: 'product-cate'}
       },
       {
@@ -107,13 +107,13 @@ export const asyncRouterMap = [
       {
         path: 'repair',
         name: 'repair',
-        component: () => import('@/views/pms/productAttr/index'),
+        component: () => import('@/views/quality/repair/index'),
         meta: {title: '维修信息', icon: 'order-return-reason'}
       },
       {
         path: 'repairCreate',
         name: 'rrepairCreate',
-        component: () => import('@/views/quality/spindle/detail'),
+        component: () => import('@/views/pms/productAttr/index'),
         meta: {title: '新建维修单'}
       }
     ]

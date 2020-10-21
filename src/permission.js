@@ -43,7 +43,7 @@ const RouteMenu = [
   },
   {
     createTime: "2020-02-02T06:51:50.000+00:00",
-    hidden: 0,
+    hidden: 1,
     icon: "",
     id: 4,
     level: 1,
@@ -98,7 +98,7 @@ const RouteMenu = [
   },
   {
     createTime: "2020-02-02T06:51:50.000+00:00",
-    hidden: 0,
+    hidden: 1,
     icon: "",
     id: 7,
     level: 1,
