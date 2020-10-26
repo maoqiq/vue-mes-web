@@ -5,10 +5,10 @@
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px" :label-position="'right'">
           <el-row :gutter="20">
             <el-col :span="7">
-              <el-form-item label="维修状态：">
-                <el-select v-model="listQuery.repairStatus" placeholder="请选择维修状态" clearable>
+              <el-form-item label="所属气流纺机编号：">
+                <el-select v-model="listQuery.machineIds" multiple placeholder="请选择气流纺机" clearable>
                   <el-option
-                    v-for="item in repairStatus"
+                    v-for="item in machineOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -17,7 +17,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="10">
-              <el-form-item label="时间：">
+              <el-form-item label="提交时间：">
                 <el-date-picker
                   v-model="listQuery.timeValue"
                   type="daterange"
@@ -29,11 +29,11 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="13">
-              <el-form-item label="维修类型：">
-                <el-select v-model="listQuery.repairType" placeholder="请选择维修类型" clearable>
+            <el-col :span="16">
+              <el-form-item label="班次编号：">
+                <el-select v-model="listQuery.classesNo" placeholder="全部" clearable>
                   <el-option
-                    v-for="item in repairTypeList"
+                    v-for="item in classesOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -58,63 +58,13 @@
                 </el-row>
               </div>
             </el-col>
-            <el-col :span="5">
-              <el-button
-                    @click="handleCreateBill()"
-                    size="small" plain>
-                    新建维修单
-                  </el-button>
-            </el-col>
           </el-row>
         </el-form>
       </div>
     </el-card>
-    <div class="table-container">
-      <el-table ref="productTable"
-                :data="repairList"
-                style="width: 100%"
-                @selection-change="handleSelectionChange"
-                v-loading="listLoading"
-                border>
-        <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="维修单编号" align="center">
-          <template slot-scope="scope">{{scope.row.order_id}}</template>
-        </el-table-column>
-        <el-table-column label="维修类型" align="center">
-          <template slot-scope="scope">{{scope.row.maintenance_type}}</template>
-        </el-table-column>
-        <el-table-column label="维修详情" align="center">
-          <template slot-scope="scope">
-            {{scope.row.maintenance_detail}}
-          </template>
-        </el-table-column>
-        <el-table-column label="维修状态" align="center">
-          <template slot-scope="scope">
-            {{scope.row.status}}
-          </template>
-        </el-table-column>
-        <el-table-column label="维修人员" align="center">
-          <template slot-scope="scope">
-            {{scope.row.maintenance_worker}}
-          </template>
-        </el-table-column>
-        <el-table-column label="备注" align="center">
-          <template slot-scope="scope">{{scope.row.remarks}}</template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="pagination-container">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.pageSize"
-        :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.pageNum"
-        :total="total">
-      </el-pagination>
-    </div>
+    <el-card class="info-container">
+
+    </el-card>
   </div>
 </template>
 <script>
@@ -129,45 +79,28 @@
   import {fetchList as fetchProductAttrList} from '@/api/productAttr'
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {fetchListWithChildren} from '@/api/productCate'
-  import repairListMockData from '@/mock/repairList.js'
+  import machineListMockData from '@/mock/machineList.js'
 
   const defaultListQuery = {
     keyword: null,
     pageNum: 1,
     pageSize: 5,
-    repairStatus: null,
+    machineIds: null,
     timeValue: null,
-    repairType: null
+    classesNo: null
   };
   export default {
     name: "productList",
     data() {
       return {
-        repairListMockData,
+        machineListMockData,
         listQuery: Object.assign({}, defaultListQuery),
-        repairList: [],
+        machineList: [],
         total: null,
         listLoading: false,
         // selectMachineValue: null,
         multipleSelection: [],
         machineOptions: [],
-        repairStatus: [{
-          value: 0,
-          label: '维修中'
-        },{
-          value: 0,
-          label: '已完成'
-        }],
-        repairTypeList: [{
-          value: 0,
-          label: '纱锭'
-        },{
-          value: 0,
-          label: '机器'
-        },{
-          value: 0,
-          label: '其他'
-        }],
         classesOptions: [{
           value: 0,
           label: '01'
@@ -186,6 +119,7 @@
     created() {
       console.log(this.machineListMockData);
       this.getList();
+      this.getMachineNoList()
     },
     watch: {
       // selectMachineValue: function (newValue) {
@@ -202,16 +136,30 @@
     },
     methods: {
       getList() {
-        this.repairList = [];
+        this.machineList = [];
         for (let i = 0; i < 20; i++) {
-          this.repairList.push(this.repairListMockData);
-          this.total = 20;
+          this.machineList.push(this.machineListMockData);
+          this.total = 50;
         }
+        console.log(this.machineList)
         // this.listLoading = true;
         // fetchList(this.listQuery).then(response => {
         //   this.listLoading = false;
         //   this.machineList = response.data.list;
         //   this.total = response.data.total;
+        // });
+      },
+      getMachineNoList() {
+        this.machineOptions = [];
+        for (let index = 0; index < 28; index++) {
+          this.machineOptions.push({label: `${index+1}号机器`, value: index+1});
+        }
+        // fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
+        //   this.machineOptions = [];
+        //   let brandList = response.data.list;
+        //   for (let i = 0; i < brandList.length; i++) {
+        //     this.machineOptions.push({label: brandList[i].name, value: brandList[i].id});
+        //   }
         // });
       },
 
@@ -222,9 +170,6 @@
       handleResetSearch() {
         this.selectMachineValue = [];
         this.listQuery = Object.assign({}, defaultListQuery);
-      },
-      handleCreateBill() {
-
       },
 
       handleSizeChange(val) {
@@ -256,6 +201,9 @@
   .submit-group{
     display: flex;
   }
+}
+.info-container{
+
 }
 </style>
 

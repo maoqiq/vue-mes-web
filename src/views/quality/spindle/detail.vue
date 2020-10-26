@@ -2,33 +2,8 @@
   <div class="app-container">
     <el-card class="filter-container" shadow="never">
       <div class="form-search" style="margin-top: 10px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="140px" :label-position="'right'">
-          <el-row :gutter="20">
-            <el-col :span="7">
-              <el-form-item label="气流纺机编号：">
-                <el-select v-model="listQuery.machineIds" multiple placeholder="请选择气流纺机" clearable>
-                  <el-option
-                    v-for="item in machineOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="10">
-              <el-form-item label="提交时间：">
-                <el-date-picker
-                  v-model="listQuery.timeValue"
-                  type="daterange"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  range-separator="至">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
+        <el-form :inline="true" :model="listQuery" size="small" label-width="100px" :label-position="'right'">
+          <el-row class="info" :gutter="20">
             <el-col :span="7">
               <el-form-item label="班次编号：">
                 <el-select v-model="listQuery.classesNo" placeholder="全部" clearable>
@@ -39,11 +14,6 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="9">
-              <el-form-item label="纱锭编号：">
-                <el-input style="width: 203px" v-model="listQuery.spindleNo" placeholder="纱锭编号"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="5">
@@ -66,56 +36,48 @@
           </el-row>
         </el-form>
       </div>
+      <div class="info-title">基本信息：（最近7班次信息）</div>
     </el-card>
     <div class="table-container">
       <el-table ref="productTable"
-                :data="machineList"
+                :data="spindleList"
                 style="width: 100%"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="锭位号码（ROT）" width="150" align="center">
-          <template slot-scope="scope">{{scope.row.rotId}}</template>
+        <el-table-column label="锭位号码(ROT)" width="130" align="center">
+          <template slot-scope="scope">{{scope.row.rot}}</template>
         </el-table-column>
-        <el-table-column label="状态" width="128" align="center">
+        <el-table-column label="状态" align="center">
           <template slot-scope="scope">{{scope.row.status}}</template>
         </el-table-column>
-        <el-table-column label="时间" align="center">
+        <el-table-column label="电清切疵总数(YC)" width="160" align="center">
           <template slot-scope="scope">
-            {{scope.row.date}}
+            {{scope.row.yc}}
           </template>
         </el-table-column>
-        <el-table-column label="班次" width="128" align="center">
+        <el-table-column label="接头数(PI)" align="center">
           <template slot-scope="scope">
-            {{scope.row.classes}}
+            {{scope.row.pi}}
           </template>
         </el-table-column>
-        <el-table-column label="电清切疵总数（YC）" width="160" align="center">
+        <el-table-column label="效率(EFF)" align="center">
           <template slot-scope="scope">
-            {{scope.row.ycSum}}
+            {{scope.row.eff}}
           </template>
         </el-table-column>
-        <el-table-column label="接头数（PI）" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.piSum}}</template>
+        <el-table-column label="异常班次(SH)" align="center">
+          <template slot-scope="scope">{{scope.row.sh}}</template>
         </el-table-column>
-        <el-table-column label="效率（EFF）" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.effSum}}</template>
+        <el-table-column label="中断次数(SLT)" align="center">
+          <template slot-scope="scope">{{scope.row.slt}}</template>
         </el-table-column>
-        <el-table-column label="异常班次（SH）" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.shSum}}</template>
+        <el-table-column label="云斑/条子造成的停止(MVVC)" width="220" align="center">
+          <template slot-scope="scope">{{scope.row.mvvc}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="220" align="center">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleJumpDetail(scope.$index, scope.row)">查看详情
-            </el-button>
-            <el-button
-              size="mini" type="primary"
-              @click="handleCreateRepair(scope.$index, scope.row)">报修
-            </el-button>
-          </template>
+        <el-table-column label="粗节/细节和CV锁住(+-V)" width="180" align="center">
+          <template slot-scope="scope">{{scope.row.v}}</template>
         </el-table-column>
       </el-table>
     </div>
@@ -131,6 +93,28 @@
         :total="total">
       </el-pagination>
     </div>
+    <el-card class="repair-container" shadow="never">
+      <p>维修历史：</p>
+      <el-table ref="productTable"
+                :data="repairHistoryList"
+                style="width: 100%"
+                @selection-change="handleSelectionChange"
+                v-loading="listLoading"
+                border>
+        <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
+        <el-table-column label="维修单编号" align="center">
+          <template slot-scope="scope">{{scope.row.order_id}}</template>
+        </el-table-column>
+        <el-table-column label="维修时间" align="center">
+          <template slot-scope="scope">{{scope.row.status}}</template>
+        </el-table-column>
+        <el-table-column label="维修内容" align="center">
+          <template slot-scope="scope">
+            {{scope.row.remarks}}
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 <script>
@@ -145,7 +129,8 @@
   import {fetchList as fetchProductAttrList} from '@/api/productAttr'
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {fetchListWithChildren} from '@/api/productCate'
-  import spindleListMockData from '@/mock/spindleList.js'
+  import spindleListDetailMockData from '@/mock/spindleListDetail.js'
+  import repairHistoryListMockData from '@/mock/repairList.js'
 
   const defaultListQuery = {
     keyword: null,
@@ -160,9 +145,10 @@
     name: "productList",
     data() {
       return {
-        spindleListMockData,
+        spindleListDetailMockData,
+        repairHistoryListMockData,
         listQuery: Object.assign({}, defaultListQuery),
-        machineList: [],
+        spindleList: [],
         total: null,
         listLoading: false,
         // selectMachineValue: null,
@@ -202,16 +188,21 @@
     },
     methods: {
       getList() {
-        this.machineList = [];
-        for (let i = 0; i < 20; i++) {
-          this.machineList.push(this.spindleListMockData);
-          this.total = 50;
+        this.spindleList = [];
+        for (let i = 0; i < 7; i++) {
+          this.spindleList.push(this.spindleListDetailMockData);
+          this.total = 7;
         }
-        console.log(this.machineList)
+        console.log(this.spindleList)
+        this.repairHistoryList = [];
+        for (let i = 0; i < 4; i++) {
+          this.repairHistoryList.push(this.repairHistoryListMockData);
+          this.total = 4;
+        }
         // this.listLoading = true;
         // fetchList(this.listQuery).then(response => {
         //   this.listLoading = false;
-        //   this.machineList = response.data.list;
+        //   this.spindleList = response.data.list;
         //   this.total = response.data.total;
         // });
       },
@@ -267,6 +258,20 @@
   .submit-group{
     display: flex;
   }
+  .info-title{
+    width: 100%;
+    border-top: 1px solid #f2f2f2;
+    padding: 18px 18px 0;
+  }
+}
+.pagination-container{
+  display: block;
+  float: none;
+  text-align: right;
+  margin: 18px;
+}
+.repair-container{
+  padding: 0 18px;
 }
 </style>
 

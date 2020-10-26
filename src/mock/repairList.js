@@ -1,9 +1,9 @@
 let id = Math.floor(Math.random() * 100);
 export default {
-  id: id,
-  type: '机器',
-  detail: '28号',
+  order_id: id,
+  maintenance_type: '机器',
+  maintenance_detail: '28号',
   status: '维修中',
-  stuff: '张三',
-  remark: '...'
+  maintenance_worker: '张三',
+  remarks: '...'
 }

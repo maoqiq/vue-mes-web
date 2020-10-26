@@ -95,7 +95,7 @@ export const asyncRouterMap = [
       {
         path: 'sourceData',
         name: 'sourceData',
-        component: () => import('@/views/pms/productCate/add'),
+        component: () => import('@/views/quality/sourceData/index'),
         meta: {title: '原数据展示', icon: 'order-return'},
       },
       {
