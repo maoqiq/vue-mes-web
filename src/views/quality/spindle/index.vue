@@ -157,7 +157,7 @@
     spindleNo:null
   };
   export default {
-    name: "productList",
+    name: "spindleList",
     data() {
       return {
         spindleListMockData,
@@ -254,10 +254,10 @@
 
       handleJumpDetail(index,row){
         console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/spindleDetail',query:{id:row.id}})
+        this.$router.push({path:'/quality/spindle/spindleDetail',query:{id:row.id}})
       },
       handleCreateRepair(index,row){
-        this.$router.push({path:'/quality/repairCreate',query:{id:row.id}});
+        this.$router.push({path:'/quality/repair/repairCreate',query:{id:row.id}});
       }
     }
   }

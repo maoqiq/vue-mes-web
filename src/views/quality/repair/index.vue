@@ -224,7 +224,7 @@
         this.listQuery = Object.assign({}, defaultListQuery);
       },
       handleCreateBill() {
-
+        this.$router.push({path:'/quality/repair/repairCreate'});
       },
 
       handleSizeChange(val) {

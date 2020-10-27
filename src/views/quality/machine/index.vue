@@ -151,7 +151,7 @@
     classesNo: null
   };
   export default {
-    name: "productList",
+    name: "machineList",
     data() {
       return {
         machineListMockData,

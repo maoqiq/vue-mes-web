@@ -63,7 +63,19 @@
       </div>
     </el-card>
     <el-card class="info-container">
-
+      <p>INTERMEDIATE REPORT</p>
+    </el-card>
+    <el-card class="-container">
+      <el-tabs v-model="tabsActiveName" @tab-click="handleClick">
+        <el-tab-pane label="PRODUCTION PARAMETER" name="first"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="PRODUCTION DATA" name="second"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="SECTION DATA" name="third"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="QUALITY DATA" name="fourth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="OFF-STANDARD" name="fifth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="REFERENCE" name="sixth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="YM LOCKS" name="seventh"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="ERRORS" name="eighth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+      </el-tabs>
     </el-card>
   </div>
 </template>
@@ -79,6 +91,7 @@
   import {fetchList as fetchProductAttrList} from '@/api/productAttr'
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {fetchListWithChildren} from '@/api/productCate'
+  import SourceTab from './components/SourceTab'
   import machineListMockData from '@/mock/machineList.js'
 
   const defaultListQuery = {
@@ -90,7 +103,8 @@
     classesNo: null
   };
   export default {
-    name: "productList",
+    name: "sourceData",
+    components: { SourceTab },
     data() {
       return {
         machineListMockData,
@@ -113,7 +127,8 @@
         }, {
           value: 3,
           label: '04'
-        }]
+        }],
+        tabsActiveName: 'first'
       }
     },
     created() {
@@ -162,6 +177,7 @@
         //   }
         // });
       },
+      // TODO get each source data
 
       handleSearchList() {
         this.listQuery.pageNum = 1;
@@ -192,6 +208,10 @@
       },
       handleJumpSpindleList(index,row){
         this.$router.push({path:'/quality/spindle',query:{id:row.id}});
+      },
+
+      handleClick(tab, event) {
+        console.log(tab, event);
       }
     }
   }
@@ -203,6 +223,7 @@
   }
 }
 .info-container{
+  margin-top: 20px;
 
 }
 </style>
