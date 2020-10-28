@@ -69,7 +69,7 @@
     </el-card>
     <div class="table-container">
       <el-table ref="productTable"
-                :data="machineList"
+                :data="spindleList"
                 style="width: 100%"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading"
@@ -162,7 +162,7 @@
       return {
         spindleListMockData,
         listQuery: Object.assign({}, defaultListQuery),
-        machineList: [],
+        spindleList: [],
         total: null,
         listLoading: false,
         // selectMachineValue: null,
@@ -202,16 +202,16 @@
     },
     methods: {
       getList() {
-        this.machineList = [];
+        this.spindleList = [];
         for (let i = 0; i < 20; i++) {
-          this.machineList.push(this.spindleListMockData);
+          this.spindleList.push(this.spindleListMockData);
           this.total = 50;
         }
-        console.log(this.machineList)
+        console.log(this.spindleList)
         // this.listLoading = true;
         // fetchList(this.listQuery).then(response => {
         //   this.listLoading = false;
-        //   this.machineList = response.data.list;
+        //   this.spindleList = response.data.list;
         //   this.total = response.data.total;
         // });
       },
@@ -254,10 +254,10 @@
 
       handleJumpDetail(index,row){
         console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/spindle/spindleDetail',query:{id:row.id}})
+        this.$router.push({path:'/quality/spindleDetail',query:{id:row.id}})
       },
       handleCreateRepair(index,row){
-        this.$router.push({path:'/quality/repair/repairCreate',query:{id:row.id}});
+        this.$router.push({path:'/quality/repairCreate',query:{id:row.id}});
       }
     }
   }

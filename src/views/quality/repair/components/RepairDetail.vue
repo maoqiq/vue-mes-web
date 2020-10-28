@@ -27,8 +27,8 @@
           v-model="repair.text"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit('brandFrom')">报修</el-button>
-        <el-button v-if="!isEdit" @click="resetForm('brandFrom')">重置</el-button>
+        <el-button type="primary" @click="onSubmit('repairFrom')">报修</el-button>
+        <el-button v-if="!isEdit" @click="resetForm('repairFrom')">重置</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -82,11 +82,11 @@
     },
     created() {
       if (this.isEdit) {
-        getBrand(this.$route.query.id).then(response => {
-          this.brand = response.data;
-        });
+        // getBrand(this.$route.query.id).then(response => {
+        //   this.repair = response.data;
+        // });
       }else{
-        this.brand = Object.assign({},defaultBrand);
+        this.repair = Object.assign({}, defaultRepair);
       }
     },
     methods: {
@@ -99,26 +99,27 @@
               type: 'warning'
             }).then(() => {
               if (this.isEdit) {
-                updateBrand(this.$route.query.id, this.brand).then(response => {
-                  this.$refs[formName].resetFields();
-                  this.$message({
-                    message: '修改成功',
-                    type: 'success',
-                    duration:1000
-                  });
-                  this.$router.back();
-                });
+                // updateBrand(this.$route.query.id, this.brand).then(response => {
+                //   this.$refs[formName].resetFields();
+                //   this.$message({
+                //     message: '修改成功',
+                //     type: 'success',
+                //     duration:1000
+                //   });
+                //   this.$router.back();
+                // });
               } else {
-                createBrand(this.brand).then(response => {
-                  this.$refs[formName].resetFields();
-                  this.brand = Object.assign({},defaultBrand);
-                  this.$message({
-                    message: '提交成功',
-                    type: 'success',
-                    duration:1000
-                  });
-                });
+                // createBrand(this.brand).then(response => {
+                //   this.$refs[formName].resetFields();
+                //   this.brand = Object.assign({},defaultBrand);
+                //   this.$message({
+                //     message: '提交成功',
+                //     type: 'success',
+                //     duration:1000
+                //   });
+                // });
               }
+              this.$router.push({path:'/quality/repair'});
             });
 
           } else {
@@ -133,7 +134,7 @@
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.brand = Object.assign({},defaultBrand);
+        this.brand = Object.assign({}, defaultRepair);
       },
       handleChange(arr){
         if(arr.length > 1){

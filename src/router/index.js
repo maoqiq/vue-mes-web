@@ -68,7 +68,14 @@ export const asyncRouterMap = [
     redirect: '/quality/machine',
     name: 'quality',
     meta: {title: '质量控制', icon: 'product'},
-    children: [{
+    children: [
+    //   {
+    //   path: 'home',
+    //   name: 'home',
+    //   component: () => import('@/views/quality/home'),
+    //   meta: {title: '主页', icon: 'product'},
+    // },
+    {
       path: 'machine',
       name: 'machine',
       component: () => import('@/views/quality/machine/index'),
@@ -81,7 +88,7 @@ export const asyncRouterMap = [
         meta: {title: '纱锭列表', icon: 'product-list'}
       },
       {
-        path: 'spindle/spindleDetail',
+        path: 'spindleDetail',
         name: 'spindleDetail',
         component: () => import('@/views/quality/spindle/detail'),
         meta: {title: '纱锭详情'},
@@ -111,7 +118,7 @@ export const asyncRouterMap = [
         meta: {title: '维修信息', icon: 'order-return-reason'}
       },
       {
-        path: 'repair/repairCreate',
+        path: 'repairCreate',
         name: 'repairCreate',
         component: () => import('@/views/quality/repair/create'),
         meta: {title: '新建维修单'}

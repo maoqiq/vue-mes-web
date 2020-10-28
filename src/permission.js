@@ -20,6 +20,17 @@ const RouteMenu = [
     title: "质量控制"
   },
   {
+    createTime: "2020-02-02T06:50:36.000+00:00",
+    hidden: 0,
+    icon: "product",
+    id: 1,
+    level: 1,
+    name: "home",
+    parentId: 0,
+    sort: 0,
+    title: "主页"
+  },
+  {
     createTime: "2020-02-02T06:51:50.000+00:00",
     hidden: 0,
     icon: "product-list",

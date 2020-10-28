@@ -16,6 +16,24 @@
                 </el-select>
               </el-form-item>
             </el-col>
+            <el-col :span="9">
+              <el-form-item label="纱锭编号：">
+                <el-input style="width: 203px" v-model="listQuery.spindleNo" placeholder="纱锭编号"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="提交时间：">
+                <el-date-picker
+                  v-model="listQuery.timeValue"
+                  type="daterange"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  range-separator="至">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
             <el-col :span="5">
               <div class="submit-group">
                 <el-row :gutter="20">
@@ -46,8 +64,11 @@
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="锭位号码(ROT)" width="130" align="center">
-          <template slot-scope="scope">{{scope.row.rot}}</template>
+        <el-table-column label="班次" width="120" align="center">
+          <template slot-scope="scope">{{scope.row.classes}}</template>
+        </el-table-column>
+        <el-table-column label="时间" width="180" align="center">
+          <template slot-scope="scope">{{scope.row.date}}</template>
         </el-table-column>
         <el-table-column label="状态" align="center">
           <template slot-scope="scope">{{scope.row.status}}</template>
