@@ -10,24 +10,13 @@ export function login(name, password) {
     }
   })
 }
-// test
-export function test(rot_id, shift_id) {
-  return request({
-    url: '/api/get_spindle_list',
-    method: 'post',
-    data: {
-      rot_id,
-      shift_id
-    }
-  })
-}
 
-export function getInfo() {
-  return request({
-    url: '/admin/info',
-    method: 'get',
-  })
-}
+// export function getInfo() {
+//   return request({
+//     url: '/admin/info',
+//     method: 'get',
+//   })
+// }
 
 export function logout() {
   return request({

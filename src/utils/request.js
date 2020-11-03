@@ -29,7 +29,7 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     const res = response.data
-    if (res.message !== "success") {
+    if (res.message&&res.message !== "success") {
       Message({
         message: res.message,
         type: 'error',

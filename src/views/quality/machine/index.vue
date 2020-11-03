@@ -6,12 +6,13 @@
           <el-row :gutter="20">
             <el-col :span="7">
               <el-form-item label="气流纺机编号：">
-                <el-select v-model="listQuery.machineIds" multiple placeholder="请选择气流纺机" clearable>
+                <!-- <el-select v-model="listQuery.machine_id" multiple placeholder="请选择气流纺机" clearable> -->
+                <el-select v-model="listQuery.machine_id" placeholder="请选择气流纺机" clearable>
                   <el-option
                     v-for="item in machineOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.device_id"
+                    :label="item.device_name"
+                    :value="item.device_id">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -21,6 +22,7 @@
                 <el-date-picker
                   v-model="listQuery.timeValue"
                   type="daterange"
+                  value-format="yyyy-MM-dd"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   range-separator="至">
@@ -31,7 +33,7 @@
           <el-row :gutter="20">
             <el-col :span="16">
               <el-form-item label="班次编号：">
-                <el-select v-model="listQuery.classesNo" placeholder="全部" clearable>
+                <el-select v-model="listQuery.shift_id" placeholder="全部" clearable>
                   <el-option
                     v-for="item in classesOptions"
                     :key="item.value"
@@ -120,42 +122,41 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.pageSize"
+        :page-size="listQuery.limit"
         :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.pageNum"
+        :current-page.sync="listQuery.page"
         :total="total">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
-  import {
-    fetchList,
-    updateDeleteStatus,
-    updateNewStatus,
-    updateRecommendStatus,
-    updatePublishStatus
-  } from '@/api/product'
-  import {fetchList as fetchSkuStockList,update as updateSkuStockList} from '@/api/skuStock'
-  import {fetchList as fetchProductAttrList} from '@/api/productAttr'
-  import {fetchList as fetchBrandList} from '@/api/brand'
-  import {fetchListWithChildren} from '@/api/productCate'
-  import machineListMockData from '@/mock/machineList.js'
+
+import { machineDropDown, getMachineList } from '@/api/machinePanelList'
+import { formatDate } from '@/utils/date'
 
   const defaultListQuery = {
-    keyword: null,
-    pageNum: 1,
-    pageSize: 5,
-    machineIds: null,
-    timeValue: null,
-    classesNo: null
+    machine_id: null,
+    shift_id: null,
+    timeValue: [],
+    page: 1,
+    limit: 5
   };
+  const defaultParams = {
+    machine_id: null,
+    shift_id: null,
+    start_time: '',
+    end_time: '',
+    page: 1,
+    limit: 5
+  }
   export default {
     name: "machineList",
     data() {
       return {
-        machineListMockData,
+        // machineListMockData,
         listQuery: Object.assign({}, defaultListQuery),
+        getListParams: Object.assign({}, defaultParams),
         machineList: [],
         total: null,
         listLoading: false,
@@ -178,14 +179,15 @@
       }
     },
     created() {
-      console.log(this.machineListMockData);
-      this.getList();
-      this.getMachineNoList()
+      this.initDate();
+      console.log(this.listQuery)
+      this.getMachineDropDownList();
+      this.getmachineList();
     },
     watch: {
       // selectMachineValue: function (newValue) {
       //   if (newValue != null && newValue.length == 2) {
-      //     this.listQuery.machineIds = newValue[1];
+      //     this.listQuery.machine_id = newValue[1];
       //   } else {
       //     this.listQuery.machineIds = null;
       //   }
@@ -195,51 +197,77 @@
     filters: {
 
     },
-    methods: {
-      getList() {
-        this.machineList = [];
-        for (let i = 0; i < 20; i++) {
-          this.machineList.push(this.machineListMockData);
-          this.total = 50;
-        }
-        console.log(this.machineList)
-        // this.listLoading = true;
-        // fetchList(this.listQuery).then(response => {
-        //   this.listLoading = false;
-        //   this.machineList = response.data.list;
-        //   this.total = response.data.total;
-        // });
+    computed:{
+      endDate() {
+        return this.formatSelectDate(new Date());
       },
-      getMachineNoList() {
-        this.machineOptions = [];
-        for (let index = 0; index < 28; index++) {
-          this.machineOptions.push({label: `${index+1}号机器`, value: index+1});
+      startDate() {
+        const start = new Date();
+        const startDate = start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+        const startString = this.formatSelectDate(startDate);
+        return startString;
+      }
+    },
+    methods: {
+      formatSelectDate(date) {
+        if (date == null || date === '') {
+          return '';
         }
-        // fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
-        //   this.machineOptions = [];
-        //   let brandList = response.data.list;
-        //   for (let i = 0; i < brandList.length; i++) {
-        //     this.machineOptions.push({label: brandList[i].name, value: brandList[i].id});
-        //   }
-        // });
+        let unformatDate = null;
+        if(date instanceof Date){
+          unformatDate = date
+        } else {
+          unformatDate = new Date(date);
+        }
+        return formatDate(unformatDate, 'yyyy-MM-dd')
+      },
+      initDate() {
+        this.listQuery.timeValue?this.listQuery.timeValue[0] = this.startDate:this.listQuery.timeValue=[];
+        this.listQuery.timeValue?this.listQuery.timeValue[1] = this.endDate:this.listQuery.timeValue=[];
+        this.getListParams.start_time = this.startDate;
+        this.getListParams.end_time = this.endDate;
+      },
+      getmachineList() {
+        getMachineList(this.getListParams).then(response => {
+          console.log(response)
+        });
+      },
+      getMachineDropDownList() {
+        this.machineOptions = [];
+        machineDropDown().then(response => {
+          console.log(response)
+          this.machineOptions = response.result;
+        });
       },
 
       handleSearchList() {
-        this.listQuery.pageNum = 1;
-        this.getList();
+        this.settingSearchParams();
+        this.getmachineList();
+      },
+      settingSearchParams(){
+        this.listQuery.page = 1;
+        for (const key in this.listQuery) {
+          if(this.getListParams.hasOwnProperty(key)){
+          this.getListParams[key] = this.listQuery[key]
+          }
+        }
+        this.getListParams.start_time = this.listQuery.timeValue[0],
+        this.getListParams.end_time = this.listQuery.timeValue[1],
+        console.log(this.getListParams)
       },
       handleResetSearch() {
         this.selectMachineValue = [];
         this.listQuery = Object.assign({}, defaultListQuery);
+        this.getListParams = Object.assign({}, defaultParams)
       },
 
       handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
+        this.listQuery.page = 1;
+        this.listQuery.limit = val;
         this.getList();
       },
       handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
+        this.listQuery.page = val;
         this.getList();
       },
       handleSelectionChange(val) {

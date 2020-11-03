@@ -26,7 +26,6 @@
         for (let i = 0; i < 28; i++) {
           this.ycboardListMockDataArr.push(this.ycboardListMockData)
         }
-        console.log(this.ycboardListMockDataArr)
       }
     }
   }
