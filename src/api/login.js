@@ -1,12 +1,23 @@
 import request from '@/utils/request'
 
-export function login(username, password) {
+export function login(name, password) {
   return request({
-    url: '/admin/login',
+    url: '/api/login',
     method: 'post',
     data: {
-      username,
-      password
+      name:name,
+      password:password
+    }
+  })
+}
+// test
+export function test(rot_id, shift_id) {
+  return request({
+    url: '/api/get_spindle_list',
+    method: 'post',
+    data: {
+      rot_id,
+      shift_id
     }
   })
 }

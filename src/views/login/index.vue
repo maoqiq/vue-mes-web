@@ -10,10 +10,10 @@
           <svg-icon icon-class="login-mall" style="width: 56px;height: 56px;color: #409EFF"></svg-icon>
         </div>
         <h2 class="login-title color-main">mall-admin-web</h2>
-        <el-form-item prop="username">
-          <el-input name="username"
+        <el-form-item prop="name">
+          <el-input name="name"
                     type="text"
-                    v-model="loginForm.username"
+                    v-model="loginForm.name"
                     autoComplete="on"
                     placeholder="请输入用户名">
           <span slot="prefix">
@@ -67,6 +67,7 @@
 
 <script>
   import {isvalidUsername} from '@/utils/validate';
+  import { test } from '@/api/login'
   import {setSupport,getSupport,setCookie,getCookie} from '@/utils/support';
   import login_center_bg from '@/assets/images/login_center_bg.png'
 
@@ -89,11 +90,11 @@
       };
       return {
         loginForm: {
-          username: '',
+          name: '',
           password: '',
         },
         loginRules: {
-          username: [{required: true, trigger: 'blur', validator: validateUsername}],
+          name: [{required: true, trigger: 'blur', validator: validateUsername}],
           password: [{required: true, trigger: 'blur', validator: validatePass}]
         },
         loading: false,
@@ -104,10 +105,10 @@
       }
     },
     created() {
-      this.loginForm.username = getCookie("username");
+      this.loginForm.name = getCookie("name");
       this.loginForm.password = getCookie("password");
-      if(this.loginForm.username === undefined||this.loginForm.username==null||this.loginForm.username===''){
-        this.loginForm.username = 'admin';
+      if(this.loginForm.name === undefined||this.loginForm.name==null||this.loginForm.name===''){
+        this.loginForm.name = 'admin';
       }
       if(this.loginForm.password === undefined||this.loginForm.password==null){
         this.loginForm.password = '';
@@ -122,6 +123,11 @@
         }
       },
       handleLogin() {
+        // test(1, 2).then(response => {
+        //   console.log(response)
+        // }).catch(error => {
+        //   reject(error)
+        // })
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             // let isSupport = getSupport();
@@ -132,7 +138,7 @@
             this.loading = true;
             this.$store.dispatch('Login', this.loginForm).then(() => {
               this.loading = false;
-              setCookie("username",this.loginForm.username,15);
+              setCookie("name",this.loginForm.name,15);
               setCookie("password",this.loginForm.password,15);
               this.$router.push({path: '/'})
             }).catch(() => {

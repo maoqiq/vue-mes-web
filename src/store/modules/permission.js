@@ -82,21 +82,23 @@ const permission = {
         const { username } = data;
         const accessedRouters = asyncRouterMap.filter(v => {
           //admin帐号直接返回所有菜单
-          // if(username==='admin') return true;
-          if (hasPermission(menus, v)) {
-            if (v.children && v.children.length > 0) {
-              v.children = v.children.filter(child => {
-                if (hasPermission(menus, child)) {
-                  return child
-                }
-                return false;
-              });
-              return v
-            } else {
-              return v
-            }
-          }
-          return false;
+          // if(username==='admin')
+          return true;
+          // console.log(v)
+          // if (hasPermission(menus, v)) {
+          //   if (v.children && v.children.length > 0) {
+          //     v.children = v.children.filter(child => {
+          //       if (hasPermission(menus, child)) {
+          //         return child
+          //       }
+          //       return false;
+          //     });
+          //     return v
+          //   } else {
+          //     return v
+          //   }
+          // }
+          // return false;
         });
         //对菜单进行排序
         sortRouters(accessedRouters);

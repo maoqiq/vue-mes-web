@@ -4,5 +4,6 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  BASE_API: '"http://admin-api.macrozheng.com"'
+  // BASE_API: '"http://admin-api.macrozheng.com"'
+  BASE_API: '"http://3w517l9724.zicp.vip"'
 })
