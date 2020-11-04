@@ -6,8 +6,7 @@
           <el-row :gutter="20">
             <el-col :span="7">
               <el-form-item label="气流纺机编号：">
-                <!-- <el-select v-model="listQuery.machine_id" multiple placeholder="请选择气流纺机" clearable> -->
-                <el-select v-model="listQuery.machine_id" placeholder="请选择气流纺机" clearable>
+                <el-select v-model="listQuery.machine_id" multiple placeholder="请选择气流纺机" clearable>
                   <el-option
                     v-for="item in machineOptions"
                     :key="item.device_id"
@@ -73,34 +72,34 @@
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
         <el-table-column label="气流纺机序号" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.id}}</template>
+          <template slot-scope="scope">{{scope.row.machine_id}}</template>
         </el-table-column>
         <el-table-column label="时间" align="center">
           <template slot-scope="scope">{{scope.row.date}}</template>
         </el-table-column>
         <el-table-column label="班次" width="128" align="center">
           <template slot-scope="scope">
-            {{scope.row.classes}}
+            {{scope.row.shift_id}}
           </template>
         </el-table-column>
         <el-table-column label="品种" width="128" align="center">
           <template slot-scope="scope">
-            {{scope.row.type}}
+            {{scope.row.variety}}
           </template>
         </el-table-column>
         <el-table-column label="效率" width="128" align="center">
           <template slot-scope="scope">
-            {{scope.row.efficiency}}
+            {{scope.row.eff}}
           </template>
         </el-table-column>
         <el-table-column label="产量" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.myield}}</template>
+          <template slot-scope="scope">{{scope.row.output}}</template>
         </el-table-column>
         <el-table-column label="接头数" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.piNum}}</template>
+          <template slot-scope="scope">{{scope.row.PI}}</template>
         </el-table-column>
         <el-table-column label="设备状态" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.status}}</template>
+          <template slot-scope="scope">{{scope.row.device_status}}</template>
         </el-table-column>
         <el-table-column label="操作" width="228" align="center">
           <template slot-scope="scope">
@@ -136,14 +135,14 @@ import { machineDropDown, getMachineList } from '@/api/machinePanelList'
 import { formatDate } from '@/utils/date'
 
   const defaultListQuery = {
-    machine_id: null,
+    machine_id: [],
     shift_id: null,
     timeValue: [],
     page: 1,
     limit: 5
   };
   const defaultParams = {
-    machine_id: null,
+    machine_id: [],
     shift_id: null,
     start_time: '',
     end_time: '',
@@ -182,7 +181,7 @@ import { formatDate } from '@/utils/date'
       this.initDate();
       console.log(this.listQuery)
       this.getMachineDropDownList();
-      this.getmachineList();
+      this.getMachineTableList();
     },
     watch: {
       // selectMachineValue: function (newValue) {
@@ -227,9 +226,11 @@ import { formatDate } from '@/utils/date'
         this.getListParams.start_time = this.startDate;
         this.getListParams.end_time = this.endDate;
       },
-      getmachineList() {
+      getMachineTableList() {
         getMachineList(this.getListParams).then(response => {
           console.log(response)
+          this.machineList = response.result
+          this.listLoading = false;
         });
       },
       getMachineDropDownList() {
@@ -242,7 +243,13 @@ import { formatDate } from '@/utils/date'
 
       handleSearchList() {
         this.settingSearchParams();
-        this.getmachineList();
+        this.getMachineTableList();
+      },
+
+      handleResetSearch() {
+        this.selectMachineValue = [];
+        this.listQuery = Object.assign({}, defaultListQuery);
+        this.getListParams = Object.assign({}, defaultParams)
       },
       settingSearchParams(){
         this.listQuery.page = 1;
@@ -254,11 +261,6 @@ import { formatDate } from '@/utils/date'
         this.getListParams.start_time = this.listQuery.timeValue[0],
         this.getListParams.end_time = this.listQuery.timeValue[1],
         console.log(this.getListParams)
-      },
-      handleResetSearch() {
-        this.selectMachineValue = [];
-        this.listQuery = Object.assign({}, defaultListQuery);
-        this.getListParams = Object.assign({}, defaultParams)
       },
 
       handleSizeChange(val) {
@@ -280,7 +282,8 @@ import { formatDate } from '@/utils/date'
         this.$router.push({path:'/quality/sourceData',query:{id:row.id}})
       },
       handleJumpSpindleList(index,row){
-        this.$router.push({path:'/quality/spindle',query:{id:row.id}});
+        this.getListParams.machine_id = [row.machine_id];
+        this.$router.push({path:'/quality/spindle',params:this.getListParams});
       }
     }
   }

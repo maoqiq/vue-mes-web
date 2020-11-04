@@ -9,7 +9,7 @@ export function machineDropDown() {
 
 export function getMachineList(params) {
   return request({
-    url: '/api/get_machine_list',
+    url: '/api/get_production_data',
     method: 'post',
     data: params
   })
