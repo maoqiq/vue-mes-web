@@ -21,6 +21,7 @@
                 <el-date-picker
                   v-model="listQuery.timeValue"
                   type="daterange"
+                  value-format="yyyy-MM-dd"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   range-separator="至">
@@ -76,34 +77,44 @@
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
         <el-table-column label="锭位号码（ROT）" width="150" align="center">
-          <template slot-scope="scope">{{scope.row.rotId}}</template>
+          <template slot-scope="scope">{{scope.row.rot_id}}</template>
         </el-table-column>
         <el-table-column label="状态" width="128" align="center">
           <template slot-scope="scope">{{scope.row.status}}</template>
         </el-table-column>
+        <el-table-column label="预警等级" width="128" align="center">
+          <template slot-scope="scope">
+            <div class="alarm-shape"
+              :class="{
+                'alarm-level-1':scope.row.alarm_level==1,
+                'alarm-level-2':scope.row.alarm_level==2,
+                'alarm-level-3':scope.row.alarm_level==3}">
+            </div>
+            <span>{{scope.row.alarm_level+'级'}}</span></template>
+        </el-table-column>
         <el-table-column label="时间" align="center">
           <template slot-scope="scope">
-            {{scope.row.date}}
+            {{scope.row.date|formatDate}}
           </template>
         </el-table-column>
         <el-table-column label="班次" width="128" align="center">
           <template slot-scope="scope">
-            {{scope.row.classes}}
+            {{scope.row.shift_id}}
           </template>
         </el-table-column>
         <el-table-column label="电清切疵总数（YC）" width="160" align="center">
           <template slot-scope="scope">
-            {{scope.row.ycSum}}
+            {{scope.row.yc}}
           </template>
         </el-table-column>
         <el-table-column label="接头数（PI）" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.piSum}}</template>
+          <template slot-scope="scope">{{scope.row.pi}}</template>
         </el-table-column>
         <el-table-column label="效率（EFF）" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.effSum}}</template>
+          <template slot-scope="scope">{{scope.row.eff}}</template>
         </el-table-column>
         <el-table-column label="异常班次（SH）" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.shSum}}</template>
+          <template slot-scope="scope">{{scope.row.sh}}</template>
         </el-table-column>
         <el-table-column label="操作" width="220" align="center">
           <template slot-scope="scope">
@@ -137,13 +148,12 @@
 import { getSpindleList } from '@/api/spindlePanelList'
 import { machineDropDown } from '@/api/machinePanelList'
 import { formatDate } from '@/utils/date'
-import spindleListMockData from '@/mock/spindleList.js'
 
   const defaultListQuery = {
     machine_id: null,
     rot_id:null,
     shift_id: null,
-    timeValue: null,
+    timeValue: [],
     page: 1,
     limit: 5
   };
@@ -160,7 +170,6 @@ import spindleListMockData from '@/mock/spindleList.js'
     name: "spindleList",
     data() {
       return {
-        spindleListMockData,
         listQuery: Object.assign({}, defaultListQuery),
         getListParams: Object.assign({}, defaultParams),
         spindleList: [],
@@ -185,7 +194,7 @@ import spindleListMockData from '@/mock/spindleList.js'
       }
     },
     created() {
-      this.getRouteParams()
+      this.defaultInit()
       this.getMachineDropDownList()
       this.getSpindleTableList()
     },
@@ -200,7 +209,13 @@ import spindleListMockData from '@/mock/spindleList.js'
       // }
     },
     filters: {
-
+      formatDate(time) {
+        if (time == null || time === '') {
+          return 'N/A';
+        }
+        let date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd')
+      },
     },
     computed:{
       endDate() {
@@ -212,6 +227,9 @@ import spindleListMockData from '@/mock/spindleList.js'
         const startString = this.formatSelectDate(startDate);
         return startString;
       }
+    },
+    mounted: function () {
+      console.log(this.$route.query)
     },
     methods: {
       formatSelectDate(date) {
@@ -226,16 +244,23 @@ import spindleListMockData from '@/mock/spindleList.js'
         }
         return formatDate(unformatDate, 'yyyy-MM-dd')
       },
-      initDate() {
+      defaultInit() {
         this.listQuery.timeValue?this.listQuery.timeValue[0] = this.startDate:this.listQuery.timeValue=[];
         this.listQuery.timeValue?this.listQuery.timeValue[1] = this.endDate:this.listQuery.timeValue=[];
         this.getListParams.start_time = this.startDate;
         this.getListParams.end_time = this.endDate;
+        if(this.$route.query){
+          this.getListParams.machine_id = this.$route.query.machine_id
+          this.getListParams.shift_id = this.$route.query.shift_id
+          this.listQuery.machine_id = this.$route.query.machine_id
+          this.listQuery.shift_id = this.$route.query.shift_id
+        }
       },
       getSpindleTableList() {
         this.listLoading = true;
         getSpindleList(this.getListParams).then(response => {
           console.log(response)
+          this.spindleList = response.result
           this.listLoading = false;
         });
       },
@@ -245,10 +270,6 @@ import spindleListMockData from '@/mock/spindleList.js'
           console.log(response)
           this.machineOptions = response.result;
         });
-      },
-
-      getRouteParams(){
-        console.log(this.$route.params)
       },
 
       handleSearchList() {
@@ -302,6 +323,23 @@ import spindleListMockData from '@/mock/spindleList.js'
   .submit-group{
     display: flex;
   }
+}
+.alarm-shape{
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f2f2f2;
+  margin-right: 8px;
+}
+.alarm-level-1{
+  background: #ee2513;
+}
+.alarm-level-2{
+  background: #FF9800;
+}
+.alarm-level-3{
+  background: #fce24f;
 }
 </style>
 

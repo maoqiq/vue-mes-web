@@ -75,7 +75,7 @@
           <template slot-scope="scope">{{scope.row.machine_id}}</template>
         </el-table-column>
         <el-table-column label="时间" align="center">
-          <template slot-scope="scope">{{scope.row.date}}</template>
+          <template slot-scope="scope">{{scope.row.date|formatDate}}</template>
         </el-table-column>
         <el-table-column label="班次" width="128" align="center">
           <template slot-scope="scope">
@@ -194,7 +194,13 @@ import { formatDate } from '@/utils/date'
       // }
     },
     filters: {
-
+      formatDate(time) {
+        if (time == null || time === '') {
+          return 'N/A';
+        }
+        let date = new Date(time);
+        return formatDate(date, 'yyyy-MM-dd')
+      },
     },
     computed:{
       endDate() {
@@ -258,8 +264,8 @@ import { formatDate } from '@/utils/date'
           this.getListParams[key] = this.listQuery[key]
           }
         }
-        this.getListParams.start_time = this.listQuery.timeValue[0],
-        this.getListParams.end_time = this.listQuery.timeValue[1],
+        this.getListParams.start_time = this.listQuery.timeValue?this.listQuery.timeValue[0]:'',
+        this.getListParams.end_time = this.listQuery.timeValue?this.listQuery.timeValue[1]:'',
         console.log(this.getListParams)
       },
 
@@ -283,7 +289,7 @@ import { formatDate } from '@/utils/date'
       },
       handleJumpSpindleList(index,row){
         this.getListParams.machine_id = [row.machine_id];
-        this.$router.push({path:'/quality/spindle',params:this.getListParams});
+        this.$router.push({path:'/quality/spindle',query:this.getListParams});
       }
     }
   }

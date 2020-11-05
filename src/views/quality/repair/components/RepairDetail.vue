@@ -34,7 +34,6 @@
   </el-card>
 </template>
 <script>
-  import {createBrand, getBrand, updateBrand} from '@/api/brand'
   import SingleUpload from '@/components/Upload/singleUpload'
   const defaultRepair={
     repairId: '',

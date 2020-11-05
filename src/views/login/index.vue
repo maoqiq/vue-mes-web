@@ -6,10 +6,12 @@
                :rules="loginRules"
                ref="loginForm"
                label-position="left">
-        <div style="text-align: center">
-          <svg-icon icon-class="login-mall" style="width: 56px;height: 56px;color: #409EFF"></svg-icon>
+        <div class="title-center">
+          <div style="text-align: center">
+            <svg-icon icon-class="login-mall" style="width: 56px;height: 56px;color: #409EFF"></svg-icon>
+          </div>
+        <h2 class="login-title color-main">立颖纺纱MES</h2>
         </div>
-        <h2 class="login-title color-main">mall-admin-web</h2>
         <el-form-item prop="name">
           <el-input name="name"
                     type="text"
@@ -36,32 +38,14 @@
           </span>
           </el-input>
         </el-form-item>
-        <el-form-item style="margin-bottom: 60px;text-align: center">
-          <el-button style="width: 45%" type="primary" :loading="loading" @click.native.prevent="handleLogin">
+        <el-form-item style="margin: 20px 0 60px 0;text-align: center">
+          <el-button style="width: 100%" type="primary" :loading="loading" @click.native.prevent="handleLogin">
             登录
           </el-button>
-          <el-button style="width: 45%" type="primary" @click.native.prevent="handleTry">
-            获取体验账号
-          </el-button>
+          <p class="copyright">@copyright 颖上立颖纺织有限公司</p>
         </el-form-item>
       </el-form>
     </el-card>
-    <img :src="login_center_bg" class="login-center-layout">
-    <el-dialog
-      title="公众号二维码"
-      :visible.sync="dialogVisible"
-      :show-close="false"
-      :center="true"
-      width="30%">
-      <div style="text-align: center">
-        <span class="font-title-large"><span class="color-main font-extra-large">关注公众号</span>回复<span class="color-main font-extra-large">体验</span>获取体验账号</span>
-        <br>
-        <img src="http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/banner/qrcode_for_macrozheng_258.jpg" width="160" height="160" style="margin-top: 10px">
-      </div>
-      <span slot="footer" class="dialog-footer">
-    <el-button type="primary" @click="dialogConfirm">确定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -149,17 +133,6 @@
             return false
           }
         })
-      },
-      handleTry(){
-        this.dialogVisible =true
-      },
-      dialogConfirm(){
-        this.dialogVisible =false;
-        setSupport(true);
-      },
-      dialogCancel(){
-        this.dialogVisible = false;
-        setSupport(false);
       }
     }
   }
@@ -174,6 +147,9 @@
     margin: 140px auto;
     border-top: 10px solid #409EFF;
   }
+  .title-center{
+    margin: 50px 0;
+  }
 
   .login-title {
     text-align: center;
@@ -186,5 +162,9 @@
     max-width: 100%;
     max-height: 100%;
     margin-top: 200px;
+  }
+  .copyright{
+    color: #575966;
+    margin: 0;
   }
 </style>

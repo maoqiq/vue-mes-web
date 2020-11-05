@@ -19,7 +19,6 @@
   </div>
 </template>
 <script>
-  import {policy} from '@/api/oss'
 
   export default {
     name: 'singleUpload',
@@ -85,19 +84,19 @@
           return true;
         }
         return new Promise((resolve, reject) => {
-          policy().then(response => {
-            _self.dataObj.policy = response.data.policy;
-            _self.dataObj.signature = response.data.signature;
-            _self.dataObj.ossaccessKeyId = response.data.accessKeyId;
-            _self.dataObj.key = response.data.dir + '/${filename}';
-            _self.dataObj.dir = response.data.dir;
-            _self.dataObj.host = response.data.host;
-            // _self.dataObj.callback = response.data.callback;
-            resolve(true)
-          }).catch(err => {
-            console.log(err)
-            reject(false)
-          })
+          // policy().then(response => {
+          //   _self.dataObj.policy = response.data.policy;
+          //   _self.dataObj.signature = response.data.signature;
+          //   _self.dataObj.ossaccessKeyId = response.data.accessKeyId;
+          //   _self.dataObj.key = response.data.dir + '/${filename}';
+          //   _self.dataObj.dir = response.data.dir;
+          //   _self.dataObj.host = response.data.host;
+          //   // _self.dataObj.callback = response.data.callback;
+          //   resolve(true)
+          // }).catch(err => {
+          //   console.log(err)
+          //   reject(false)
+          // })
         })
       },
       handleUploadSuccess(res, file) {
