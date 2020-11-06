@@ -1,147 +1,39 @@
 <template> 
-  <div class="app-container">
-    <el-card class="filter-container" shadow="never">
-      <div class="form-search" style="margin-top: 10px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="120px" :label-position="'right'">
-          <el-row :gutter="20">
-            <el-col :span="6">
-              <el-form-item label="指标类型：">
-                <el-select v-model="listQuery.pointType" placeholder="请选择指标类型" clearable>
-                  <el-option
-                    v-for="item in pointTypeList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="6">
-              <el-form-item label="报警等级：">
-                <el-select v-model="listQuery.warningGrades" multiple placeholder="请选择报警等级" clearable>
-                  <el-option
-                    v-for="item in 4"
-                    :key="item"
-                    :label="item"
-                    :value="item">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="6">
-              <el-form-item label="气流纺机编号：">
-                <el-select v-model="listQuery.machineIds" multiple placeholder="请选择气流纺机" clearable>
-                  <el-option
-                    v-for="item in machineOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="提交时间：">
-                <el-date-picker
-                  v-model="listQuery.timeValue"
-                  type="daterange"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  range-separator="至">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col :span="7">
-              <el-form-item label="班次编号：">
-                <el-select v-model="listQuery.classesNo" placeholder="全部" clearable>
-                  <el-option
-                    v-for="item in classesOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="5">
-              <div class="submit-group">
-                <el-row :gutter="20">
-                  <el-button
-                    @click="handleSearchList()"
-                    type="primary"
-                    size="small">
-                    搜索
-                  </el-button>
-                  <el-button
-                    @click="handleResetSearch()"
-                    size="small">
-                    清空条件
-                  </el-button>
-                </el-row>
-              </div>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
-    </el-card>
-    <div class="table-container">
-      <el-table ref="productTable"
-                :data="warningList"
-                style="width: 100%"
-                @selection-change="handleSelectionChange"
-                v-loading="listLoading"
-                border>
-        <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="消息序号" width="130" align="center">
-          <template slot-scope="scope">{{scope.row.msgId}}</template>
-        </el-table-column>
-        <el-table-column :label="listQuery.pointType.label" width="160" align="center">
-          <template slot-scope="scope">{{scope.row.pointType}}</template>
-        </el-table-column>
-        <el-table-column label="报警等级" width="140" align="center">
-          <template slot-scope="scope">
-            {{scope.row.grade}}
-          </template>
-        </el-table-column>
-        <el-table-column label="锭位号码(ROT)" width="140" align="center">
-          <template slot-scope="scope">
-            {{scope.row.rot}}
-          </template>
-        </el-table-column>
-        <el-table-column label="所属气流纺机号" width="140" align="center">
-          <template slot-scope="scope">
-            {{scope.row.machineId}}
-          </template>
-        </el-table-column>
-        <el-table-column label="所属班次号" width="140" align="center">
-          <template slot-scope="scope">{{scope.row.classes}}</template>
-        </el-table-column>
-        <el-table-column label="接收时间" align="center">
-          <template slot-scope="scope">
-            {{scope.row.date}}
-          </template>
-        </el-table-column>
-        <el-table-column label="消息状态" width="140" align="center">
-          <template slot-scope="scope">{{scope.row.msgStatus}}</template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="pagination-container">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.pageSize"
-        :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.pageNum"
-        :total="total">
-      </el-pagination>
-    </div>
-  </div>
+  <el-card class="form-container" shadow="never">
+    <el-form :model="repair" :rules="rules" ref="repairFrom" label-width="150px">
+      <el-form-item label="维修单编号：" prop="repairId">
+        <el-input v-model="repair.repairId"></el-input>
+      </el-form-item>
+      <el-form-item label="维修单类型：" prop="type">
+        <el-checkbox-group class="repair-checkbox" v-model="repair.checkList" @change="handleChange">
+          <el-checkbox :label="item.label" v-for="item of repairTypeList" :key="item.label"></el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item label="维修单明细：" prop="detail">
+        <el-select v-model="repair.detail" placeholder="请选择机器号" clearable>
+          <el-option
+            v-for="item in 5"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="维修内容：">
+        <el-input
+          placeholder="请输入维修内容"
+          type="textarea"
+          :rows="3"
+          v-model="repair.text"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit('repairFrom')">报修</el-button>
+        <el-button v-if="!isEdit" @click="resetForm('repairFrom')">重置</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
 </template>
+
 <script>
 
   import warningListMockData from '@/mock/warningList.js'

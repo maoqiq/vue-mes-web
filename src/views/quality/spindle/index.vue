@@ -34,7 +34,7 @@
               <el-form-item label="班次编号：">
                 <el-select v-model="listQuery.shift_id" placeholder="全部" clearable>
                   <el-option
-                    v-for="item in classesOptions"
+                    v-for="item in shiftOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -72,7 +72,6 @@
       <el-table ref="productTable"
                 :data="spindleList"
                 style="width: 100%"
-                @selection-change="handleSelectionChange"
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
@@ -178,18 +177,18 @@ import { formatDate } from '@/utils/date'
         // selectMachineValue: null,
         multipleSelection: [],
         machineOptions: [],
-        classesOptions: [{
-          value: 0,
-          label: '01'
-        }, {
+        shiftOptions: [{
           value: 1,
-          label: '02'
+          label: '1'
         }, {
           value: 2,
-          label: '03'
+          label: '2'
         }, {
           value: 3,
-          label: '04'
+          label: '3'
+        }, {
+          value: 4,
+          label: '4'
         }]
       }
     },
@@ -228,9 +227,6 @@ import { formatDate } from '@/utils/date'
         return startString;
       }
     },
-    mounted: function () {
-      console.log(this.$route.query)
-    },
     methods: {
       formatSelectDate(date) {
         if (date == null || date === '') {
@@ -261,7 +257,8 @@ import { formatDate } from '@/utils/date'
         getSpindleList(this.getListParams).then(response => {
           console.log(response)
           this.spindleList = response.result
-          this.listLoading = false;
+          this.total = response.total
+          this.listLoading = false
         });
       },
       getMachineDropDownList() {
@@ -295,17 +292,13 @@ import { formatDate } from '@/utils/date'
       },
 
       handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
-        this.getList();
+        this.listQuery.page = 1;
+        this.listQuery.limit = val;
+        this.getSpindleTableList();
       },
       handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
-        this.getList();
-      },
-      handleSelectionChange(val) {
-        console.log(val)
-        this.multipleSelection = val;
+        this.listQuery.page = val;
+        this.getSpindleTableList();
       },
 
       handleJumpDetail(index,row){

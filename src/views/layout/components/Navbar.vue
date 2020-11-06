@@ -2,7 +2,10 @@
   <el-menu class="navbar" mode="horizontal">
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
     <breadcrumb></breadcrumb>
-    <span v-if="showBoardDate" class="board-date">当天（2020.09.28 00:00 - 2020.09.28 24:00）</span>
+    <span v-if="showBoardDate" class="board-date">
+      {{dashboardDate.format_time}} ( {{dashboardDate.start_time}} -
+      {{dashboardDate.end_time}} )
+    </span>
   </el-menu>
 </template>
 
@@ -24,13 +27,21 @@ export default {
   },
   data() {
     return {
-      showBoardDate: true
+      showBoardDate: true,
+      dashboardDate: null
     }
   },
   watch: {
     $route() {
       this.handleBoardDate()
     }
+  },
+  created() {
+    this.dashboardDate = JSON.parse(localStorage.getItem('dashboardDate'))
+    console.log(this.dashboardDate)
+  },
+  mounted() {
+
   },
   methods: {
     toggleSideBar() {

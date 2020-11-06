@@ -6,7 +6,8 @@
     </div>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
-        <img class="user-avatar" :src="avatar">
+        <!-- <img class="user-avatar" :src="avatar"> -->
+        <i class="el-icon-s-custom"></i>
         <span>{{name}}</span>
         <i class="el-icon-caret-bottom"></i>
       </div>
@@ -87,6 +88,12 @@ export default {
       span {
         display: inline-block;
         line-height: 40px;
+      }
+      .el-icon-s-custom{
+        font-size: 12px;
+        font-size: 32px;
+        line-height: 42px;
+        margin-right: 4px;
       }
       .el-icon-caret-bottom {
         position: absolute;

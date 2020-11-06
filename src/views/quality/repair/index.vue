@@ -73,7 +73,6 @@
       <el-table ref="productTable"
                 :data="repairList"
                 style="width: 100%"
-                @selection-change="handleSelectionChange"
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
@@ -214,7 +213,7 @@
         this.listQuery = Object.assign({}, defaultListQuery);
       },
       handleCreateBill() {
-        this.$router.push({path:'/quality/repair/repairCreate'});
+        this.$router.push({path:'/quality/repairCreate'});
       },
 
       handleSizeChange(val) {
@@ -225,18 +224,6 @@
       handleCurrentChange(val) {
         this.listQuery.pageNum = val;
         this.getList();
-      },
-      handleSelectionChange(val) {
-        console.log(val)
-        this.multipleSelection = val;
-      },
-
-      handleJumpOriginData(index,row){
-        console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/sourceData',query:{id:row.id}})
-      },
-      handleJumpSpindleList(index,row){
-        this.$router.push({path:'/quality/spindle',query:{id:row.id}});
       }
     }
   }

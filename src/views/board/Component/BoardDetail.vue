@@ -2,22 +2,34 @@
   <div class="app-container">
     <div class="board-layout">
       <el-row :gutter="20">
-        <el-col :span="6" v-for="(item,index) in listData"
+        <el-col class="no-data" v-if="!listData">
+          <i class="el-icon-search"></i>
+          暂无数据
+        </el-col>
+        <el-col v-else :span="6" v-for="(item,index) in listData"
             :key="index">
           <el-card class="box-card" :body-style="{ padding: '14px 0 0' }">
             <div slot="header">
               <div style="margin:-18px -20px;" class="clearfix">
-                <div class="title">{{item.machineNum}}号气流纺机</div>
+                <div class="title">{{item.machine_name}}</div>
                 <div class="number">
-                  <span class="failed" :style="{color:item.diyStyle}">{{item.shadingFailedSum}}</span>
-                  <span>/ 860</span>
+                  <span class="failed"
+                    :class="{
+                    'alarm-level-1':item.level==1,
+                    'alarm-level-2':item.level==2,
+                    'alarm-level-3':item.level==3}">
+                    {{item.sum}}</span>
                 </div>
-                <i class="el-icon-s-management" :style="{color:item.diyStyle}"></i>
+                <i class="el-icon-s-management"
+                  :class="{
+                  'alarm-level-1':item.level==1,
+                  'alarm-level-2':item.level==2,
+                  'alarm-level-3':item.level==3}"></i>
               </div>
             </div>
             <div class="text-center">
-              <div class="item" v-for="shading in item.shadingFailedArr" :key="shading">
-                {{shading}}
+              <div class="item" v-for="spindle in item.rot_id" :key="spindle">
+                {{spindle}}
               </div>
             </div>
           </el-card>
@@ -38,14 +50,10 @@
     },
     data() {
       return {
-        // listData: []
       }
     },
     created() {
       console.log(this.listData)
-      // if (this.listData) {
-      //   this.listData = this.listData;
-      // }
     },
     methods: {
 
@@ -91,6 +99,25 @@
         }
       }
     }
+  }
+  .no-data{
+    color: #97a8be;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    .el-icon-search{
+      font-size: 50px;
+      margin: 20px;
+    }
+  }
+  .alarm-level-1{
+    color: #ee2513;
+  }
+  .alarm-level-2{
+    color: #FF9800;
+  }
+  .alarm-level-3{
+    color: #fce24f;
   }
 </style>
 

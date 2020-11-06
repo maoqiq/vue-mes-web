@@ -34,7 +34,7 @@
               <el-form-item label="班次编号：">
                 <el-select v-model="listQuery.shift_id" placeholder="全部" clearable>
                   <el-option
-                    v-for="item in classesOptions"
+                    v-for="item in shiftOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -67,41 +67,40 @@
       <el-table ref="productTable"
                 :data="machineList"
                 style="width: 100%"
-                @selection-change="handleSelectionChange"
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="气流纺机序号" width="120" align="center">
+        <el-table-column label="气流纺机序号" width="130" align="center">
           <template slot-scope="scope">{{scope.row.machine_id}}</template>
         </el-table-column>
         <el-table-column label="时间" align="center">
           <template slot-scope="scope">{{scope.row.date|formatDate}}</template>
         </el-table-column>
-        <el-table-column label="班次" width="128" align="center">
+        <el-table-column label="班次" width="140" align="center">
           <template slot-scope="scope">
             {{scope.row.shift_id}}
           </template>
         </el-table-column>
-        <el-table-column label="品种" width="128" align="center">
+        <el-table-column label="品种" width="140" align="center">
           <template slot-scope="scope">
             {{scope.row.variety}}
           </template>
         </el-table-column>
-        <el-table-column label="效率" width="128" align="center">
+        <el-table-column label="效率" width="140" align="center">
           <template slot-scope="scope">
             {{scope.row.eff}}
           </template>
         </el-table-column>
-        <el-table-column label="产量" width="128" align="center">
+        <el-table-column label="产量 ( 千克 ) " width="150" align="center">
           <template slot-scope="scope">{{scope.row.output}}</template>
         </el-table-column>
-        <el-table-column label="接头数" width="128" align="center">
+        <el-table-column label="接头数" width="140" align="center">
           <template slot-scope="scope">{{scope.row.PI}}</template>
         </el-table-column>
-        <el-table-column label="设备状态" width="128" align="center">
+        <el-table-column label="设备状态" width="140" align="center">
           <template slot-scope="scope">{{scope.row.device_status}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="228" align="center">
+        <el-table-column label="操作" width="260" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -162,18 +161,18 @@ import { formatDate } from '@/utils/date'
         // selectMachineValue: null,
         multipleSelection: [],
         machineOptions: [],
-        classesOptions: [{
-          value: 0,
-          label: '01'
-        }, {
+        shiftOptions: [{
           value: 1,
-          label: '02'
+          label: '1'
         }, {
           value: 2,
-          label: '03'
+          label: '2'
         }, {
           value: 3,
-          label: '04'
+          label: '3'
+        }, {
+          value: 4,
+          label: '4'
         }]
       }
     },
@@ -236,6 +235,7 @@ import { formatDate } from '@/utils/date'
         getMachineList(this.getListParams).then(response => {
           console.log(response)
           this.machineList = response.result
+          this.total = response.total
           this.listLoading = false;
         });
       },
@@ -272,17 +272,12 @@ import { formatDate } from '@/utils/date'
       handleSizeChange(val) {
         this.listQuery.page = 1;
         this.listQuery.limit = val;
-        this.getList();
+        this.getMachineTableList();
       },
       handleCurrentChange(val) {
         this.listQuery.page = val;
-        this.getList();
+        this.getMachineTableList();
       },
-      handleSelectionChange(val) {
-        console.log(val)
-        this.multipleSelection = val;
-      },
-
       handleJumpOriginData(index,row){
         console.log("handleShowOriginData",row);
         this.$router.push({path:'/quality/sourceData',query:{id:row.id}})
