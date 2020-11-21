@@ -303,7 +303,8 @@ import { formatDate } from '@/utils/date'
 
       handleJumpDetail(index,row){
         console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/spindleDetail',query:{id:row.id}})
+        console.log("handleShowOriginData",index);
+        this.$router.push({path:'/quality/spindleDetail',query:{id:row.rot_id}})
       },
       handleCreateRepair(index,row){
         this.$router.push({path:'/quality/repairCreate',query:{id:row.id}});

@@ -108,7 +108,7 @@ export const asyncRouterMap = [
       {
         path: 'setting',
         name: 'setting',
-        component: () => import('@/views/quality/warning/index'),
+        component: () => import('@/views/quality/settings/index'),
         meta: {title: '指标配置', icon: 'order-setting'},
       },
       {

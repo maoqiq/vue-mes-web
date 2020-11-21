@@ -7,3 +7,11 @@ export function getSpindleList(params) {
     data: params
   })
 }
+
+export function getSpindleDetail(params) {
+  return request({
+    url: '/api/get_spindle_detail_list',
+    method: 'post',
+    data: params
+  })
+}
