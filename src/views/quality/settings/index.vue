@@ -20,7 +20,7 @@
     components: { DashboardSetting, WarningSetting },
     data() {
       return {
-        activeName: 'warning'
+        activeName: 'dashboard'
       };
     },
     methods: {

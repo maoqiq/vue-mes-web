@@ -1,143 +1,182 @@
 <template> 
   <el-card class="batch-operate-container" shadow="never">
-    <el-form :model="repair" :rules="rules" ref="repairFrom" label-width="150px">
-      <el-form-item label="维修单编号：" prop="repairId">
-        <el-input v-model="repair.repairId"></el-input>
-      </el-form-item>
-      <el-form-item label="维修单类型：" prop="type">
-        <el-checkbox-group class="repair-checkbox" v-model="repair.checkList" @change="handleChange">
-          <el-checkbox :label="item.label" v-for="item of repairTypeList" :key="item.label"></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="维修单明细：" prop="detail">
-        <el-select v-model="repair.detail" placeholder="请选择机器号" clearable>
+    <el-form :model="listQuery" ref="from" label-width="150px">
+      <el-form-item label="指标类型：" prop="type">
+        <el-select v-model="listQuery.type" placeholder="请选择指标类型" clearable>
           <el-option
-            v-for="item in 5"
-            :key="item"
-            :label="item"
+            v-for="item in pointTypeList"
+            :key="item.value"
+            :label="item.label"
             :value="item">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="维修内容：">
-        <el-input
-          placeholder="请输入维修内容"
-          type="textarea"
-          :rows="3"
-          v-model="repair.text"></el-input>
+      <el-form-item label="时间：" prop="time">
+        <template>
+          <el-checkbox-group v-model="listQuery.period" size="medium" @change="handleDateTabChange" :disabled="listQuery.timeValue&&listQuery.timeValue.length!=0">
+            <el-checkbox-button v-for="date in dateList" :label="date.value" :key="date.label">{{date.label}}</el-checkbox-button>
+          </el-checkbox-group>
+          <div class="date-group">
+            <el-date-picker
+              v-model="listQuery.timeValue"
+              :disabled="listQuery.period&&listQuery.period.length!=0"
+              :change="handleDatePickerChange"
+              type="daterange"
+              value-format="yyyy-MM-dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              range-separator="至">
+            </el-date-picker>
+          </div>
+        </template>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit('repairFrom')">报修</el-button>
-        <el-button v-if="!isEdit" @click="resetForm('repairFrom')">重置</el-button>
+        <el-button type="primary" @click="onSubmit('from')">保存</el-button>
+        <el-button @click="resetForm('from')">重置</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 <script>
-  import SingleUpload from '@/components/Upload/singleUpload'
-  const defaultRepair={
-    repairId: '',
-    checkList: [],
-    detail: '',
-    text: ''
+  import { settingDashboardConfig,getDashboardConfig } from '@/api/configSettings'
+  import { formatDate } from '@/utils/date'
+  const defaultListQuery = {
+    type: {
+      value: 'yc',
+      label:'电清切疵总数( YC )'
+    },
+    period: [],
+    timeValue: []
+  };
+  const defaultParams = {
+    type: 'yc',
+    start_time: '',
+    end_time: '',
+    period: ''
   };
   export default {
     name: 'dashboardSetting',
 
     data() {
       return {
-        repair:Object.assign({}, defaultRepair),
-        rules: {
-          // name: [
-          //   {required: true, message: '请输入品牌名称', trigger: 'blur'},
-          //   {min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur'}
-          // ],
-          // logo: [
-          //   {required: true, message: '请输入品牌logo', trigger: 'blur'}
-          // ],
-          // sort: [
-          //   {type: 'number', message: '排序必须为数字'}
-          // ]
-        },
-        checkList: [],
-        repairTypeList: [
+        listQuery: Object.assign({}, defaultListQuery),
+        getListParams: Object.assign({}, defaultParams),
+        pointTypeList: [{
+          value: 'yc',
+          label:'电清切疵总数( YC )'
+        },{
+          value: 'pi',
+          label:'接头数( PI )'
+        },{
+          value: 'eff',
+          label:'效率( EFF )'
+        },{
+          value: 'sh',
+          label:'异常班次( SH )'
+        },{
+          value: 'stopped sp',
+          label:'停止纱锭( STOPPED SP )'
+        }],
+        dateList: [
           {
-            label: '机器'
+            value: '-1',
+            label:'上一批次'
           },
           {
-            label: '纱锭'
+            value: '0',
+            label:'当天'
           },
           {
-            label: '其他'
-          }
+            value: '1',
+            label:'前一天'
+          },
+          {
+            value: '3',
+            label:'最近三天'
+          },
+          {
+            value: '7',
+            label:'最近一周'
+          },
         ]
       }
     },
     created() {
-      if (this.isEdit) {
-        // getBrand(this.$route.query.id).then(response => {
-        //   this.repair = response.data;
-        // });
-      }else{
-        this.repair = Object.assign({}, defaultRepair);
-      }
+      console.log(this.listQuery)
+      getDashboardConfig({type: this.getListParams.type}).then(response=>{
+        console.log(response)
+        this.handleGetConfig(response.result)
+      })
     },
     methods: {
+      handleGetConfig(params){
+        this.getListParams.start_time = this.formatSelectDate(params.start_time)
+        this.getListParams.end_time = this.formatSelectDate(params.end_time)
+        let dateArr = [this.getListParams.start_time,this.getListParams.end_time]
+        this.listQuery.timeValue=dateArr
+        console.log(this.listQuery)
+      },
+      formatSelectDate(date) {
+        if (date == null || date === '') {
+          return '';
+        }
+        let unformatDate = null;
+        if(date instanceof Date){
+          unformatDate = date
+        } else {
+          unformatDate = new Date(date);
+        }
+        return formatDate(unformatDate, 'yyyy-MM-dd')
+      },
       onSubmit(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            this.$confirm('是否提交数据', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              if (this.isEdit) {
-                // updateBrand(this.$route.query.id, this.brand).then(response => {
-                //   this.$refs[formName].resetFields();
-                //   this.$message({
-                //     message: '修改成功',
-                //     type: 'success',
-                //     duration:1000
-                //   });
-                //   this.$router.back();
-                // });
-              } else {
-                // createBrand(this.brand).then(response => {
-                //   this.$refs[formName].resetFields();
-                //   this.brand = Object.assign({},defaultBrand);
-                //   this.$message({
-                //     message: '提交成功',
-                //     type: 'success',
-                //     duration:1000
-                //   });
-                // });
-              }
-              this.$router.push({path:'/quality/repair'});
-            });
-
-          } else {
-            this.$message({
-              message: '验证失败',
-              type: 'error',
-              duration:1000
-            });
-            return false;
-          }
+        this.settingSearchParams()
+        settingDashboardConfig(this.getListParams).then(response => {
+          console.log(response)
         });
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
         this.brand = Object.assign({}, defaultRepair);
       },
-      handleChange(arr){
+      handleDateTabChange(arr){
+        console.log(arr)
         if(arr.length > 1){
           arr.shift()
+        } else if(arr.length == 0){
+          this.listQuery.period = []
+          this.getListParams.period = ''
         }
-      }
+        this.listQuery.timeValue = []
+        this.getListParams.start_time = ''
+        this.getListParams.end_time = ''
+      },
+      handleDatePickerChange(){
+        this.listQuery.period = []
+        this.getListParams.period = ''
+      },
+      settingSearchParams(){
+        this.getListParams.type = this.listQuery.type.value
+        if(this.listQuery.timeValue&&this.listQuery.timeValue.length!=0){
+          this.getListParams.start_time = this.listQuery.timeValue[0]
+          this.getListParams.end_time = this.listQuery.timeValue[1]
+        } else if(this.listQuery.period&&this.listQuery.period.length!=0){
+          this.getListParams.period = this.listQuery.period[0]
+        } else {
+          return
+        }
+        console.log(this.getListParams)
+        console.log(this.listQuery)
+      },
     }
   }
 </script>
-<style>
+<style rel="stylesheet/scss" lang="scss" scoped>
+.date-group{
+  margin: 20px 0;
+  .el-input__inner {
+    width: 100%;
+  }
+}
 </style>
 
 

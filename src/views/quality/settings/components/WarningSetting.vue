@@ -47,7 +47,6 @@
   </el-card>
 </template>
 <script>
-  import SingleUpload from '@/components/Upload/singleUpload'
   import { settingWarningConfig } from '@/api/configSettings'
 
   const defaultListQuery = {
@@ -116,6 +115,9 @@
           }
         }]
       }
+  },
+  created() {
+    console.log(this.listQuery)
   },
   methods: {
     onSubmit() {

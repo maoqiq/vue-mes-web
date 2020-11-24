@@ -10,7 +10,7 @@
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="锭位号码（ROT）" width="120" align="center">
+        <el-table-column label="锭位号码（ROT）" width="150" align="center">
           <template slot-scope="scope">{{scope.row.rot}}</template>
         </el-table-column>
         <el-table-column label="状态" align="center">

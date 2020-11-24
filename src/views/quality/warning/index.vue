@@ -6,7 +6,7 @@
           <el-row :gutter="20">
             <el-col :span="6">
               <el-form-item label="指标类型：">
-                <el-select v-model="listQuery.pointType" placeholder="请选择指标类型" clearable>
+                <el-select v-model="listQuery.pointType" placeholder="请选择指标类型" @change="searchByType" clearable>
                   <el-option
                     v-for="item in pointTypeList"
                     :key="item.value"
@@ -159,7 +159,7 @@
     limit: 5
   };
   const defaultParams = {
-    indicate_type: 'YC',
+    indicate_type: 'yc',
     alarm_level: '',
     machine_id: [],
     shift_id: null,
@@ -267,6 +267,10 @@
           console.log(response)
           this.machineOptions = response.result;
         });
+      },
+      searchByType(val){
+        this.getListParams.indicate_type = val.value
+        this.handleSearchList();
       },
       handleSearchList() {
         this.settingSearchParams();
