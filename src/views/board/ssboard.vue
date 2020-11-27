@@ -69,6 +69,7 @@
                 }
               }
               resultItem.machine_id = key
+              resultItem.type = this.dashboardParams.type
               console.log(resultItem)
               this.dashboardList.push(resultItem)
             }

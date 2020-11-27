@@ -1,6 +1,6 @@
 <template> 
   <el-card class="batch-operate-container" shadow="never">
-    <el-form :model="listQuery" :rules="rules" ref="from" :label-position="right" label-width="120px">
+    <el-form :model="listQuery" :rules="rules" ref="form" :label-position="right" label-width="120px">
       <el-form-item label="指标类型：">
         <el-select v-model="listQuery.type" placeholder="请选择指标类型" clearable>
           <el-option
@@ -33,21 +33,23 @@
       <el-form-item label="预警配置详情：">
         <template>
           <div v-for="(item,key) in levelParams" :key="key">
-            <span>{{key}}: </span>
-            <span>{{item.lo_limit}}</span> --
-            <span>{{item.hi_limit}}</span>
+            <div v-if="key!='type'">
+              <span>{{key}}: </span>
+              <span>{{item.lo_limit}}</span> --
+              <span>{{item.hi_limit}}</span>
+            </div>
           </div>
         </template>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit()">保存</el-button>
-        <el-button v-if="!isEdit" @click="resetForm()">重置</el-button>
+        <el-button size="medium" type="primary" @click="onSubmit()">保存</el-button>
+        <el-button size="medium" @click="handleReset()">清空条件</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 <script>
-  import { settingWarningConfig } from '@/api/configSettings'
+  import { settingWarningConfig, getWarningConfig } from '@/api/configSettings'
 
   const defaultListQuery = {
     type: {
@@ -59,6 +61,7 @@
     hi_limit: 90
   };
   const defaultLevelParams = {
+    type: 'yc',
     p1:{
       lo_limit: 80,
       hi_limit: 100
@@ -117,7 +120,11 @@
       }
   },
   created() {
-    console.log(this.listQuery)
+    console.log(this.levelParams)
+    getWarningConfig({type: this.levelParams.type}).then(response=>{
+      console.log(response)
+      // this.handleGetConfig(response.result)
+    })
   },
   methods: {
     onSubmit() {
@@ -130,6 +137,8 @@
     levelChange(temp){
       console.log(temp)
       this.currentLevel = temp.value
+      this.listQuery.lo_limit = temp.config.lo_limit
+      this.listQuery.hi_limit = temp.config.hi_limit
     },
     loLimitChange(level){
       console.log(level)
@@ -151,9 +160,12 @@
         }
       }
     },
-    resetForm(formName) {
+    handleReset() {
       this.$refs['form'].resetFields();
-      // this.brand = Object.assign({}, defaultRepair);
+      this.listQuery = Object.assign({}, defaultListQuery)
+      this.levelParams = Object.assign({}, defaultLevelParams)
+      console.log(this.listQuery)
+      console.log(this.levelParams)
     },
     handleChange(arr){
       if(arr.length > 1){

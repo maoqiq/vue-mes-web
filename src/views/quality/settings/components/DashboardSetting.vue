@@ -31,8 +31,8 @@
         </template>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit('from')">保存</el-button>
-        <el-button @click="resetForm('from')">重置</el-button>
+        <el-button size="medium" type="primary" @click="onSubmit('from')">保存</el-button>
+        <el-button size="medium" @click="handleReset('from')">清空条件</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -110,10 +110,15 @@
     },
     methods: {
       handleGetConfig(params){
-        this.getListParams.start_time = this.formatSelectDate(params.start_time)
-        this.getListParams.end_time = this.formatSelectDate(params.end_time)
-        let dateArr = [this.getListParams.start_time,this.getListParams.end_time]
-        this.listQuery.timeValue=dateArr
+        if(params.period!=null){
+          this.listQuery.period = []
+          this.listQuery.period.push(params.period+'')
+        } else {
+          this.getListParams.start_time = this.formatSelectDate(params.start_time)
+          this.getListParams.end_time = this.formatSelectDate(params.end_time)
+          let dateArr = [this.getListParams.start_time,this.getListParams.end_time]
+          this.listQuery.timeValue=dateArr
+        }
         console.log(this.listQuery)
       },
       formatSelectDate(date) {
@@ -140,6 +145,7 @@
       },
       handleDateTabChange(arr){
         console.log(arr)
+        console.log(this.listQuery.period)
         if(arr.length > 1){
           arr.shift()
         } else if(arr.length == 0){
@@ -149,6 +155,7 @@
         this.listQuery.timeValue = []
         this.getListParams.start_time = ''
         this.getListParams.end_time = ''
+        console.log(this.listQuery.period)
       },
       handleDatePickerChange(){
         this.listQuery.period = []
@@ -166,6 +173,11 @@
         }
         console.log(this.getListParams)
         console.log(this.listQuery)
+      },
+      handleReset() {
+        this.selectMachineValue = [];
+        this.listQuery = Object.assign({}, defaultListQuery);
+        this.getListParams = Object.assign({}, defaultParams)
       },
     }
   }
