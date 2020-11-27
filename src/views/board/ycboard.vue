@@ -5,32 +5,25 @@
 <script>
   import BoardDetail from './Component/BoardDetail'
   import { getDashboardList } from '@/api/dashboard'
+  import { getDashboardConfig } from '@/api/configSettings'
   import { formatDate } from '@/utils/date'
-  import { defaultDashboardParams,defalutResultItem } from './index'
+  import { defaultDashboardParams,defalutResultItem,dateList } from './index'
 
   export default {
     name: 'ycboard',
     components: { BoardDetail },
     data() {
       return {
+        dashboardTime:{
+          path: '/YCboard',
+          displayTime: ''
+        },
         dashboardList:[],
         dashboardParams: Object.assign({},defaultDashboardParams)
       }
     },
     created(){
-      this.defaultInitParams()
-      this.getData();
-    },
-    computed:{
-      endDate() {
-        return this.formatSelectDate(new Date());
-      },
-      startDate() {
-        const start = new Date();
-        const startDate = start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-        const startString = this.formatSelectDate(startDate);
-        return startString;
-      }
+      this.getConfigData()
     },
     methods:{
       formatSelectDate(date) {
@@ -45,11 +38,35 @@
         }
         return formatDate(unformatDate, 'yyyy-MM-dd')
       },
-      defaultInitParams() {
-        this.dashboardParams.start_time = this.startDate;
-        this.dashboardParams.end_time = this.endDate;
-        this.dashboardParams.type = 'yc'
+      getConfigData(){
+        getDashboardConfig({type: 'yc'}).then(response=>{
+          console.log(response)
+          this.handleTimeDisplay(response.result)
+        })
       },
+      handleTimeDisplay(date){
+        let displayPeriod = ''
+        let displayTime = ''
+        dateList.forEach(element => {
+          if(date.period==element.value){
+            displayPeriod = element.label
+          }
+        });
+        if(date.period!="-1"){
+          let startTime = this.formatSelectDate(date.start_time)
+          let endTime = this.formatSelectDate(date.end_time)
+          this.dashboardParams.start_time = startTime;
+          this.dashboardParams.end_time = endTime;
+          displayTime = `${displayPeriod} ( ${startTime} 至 ${endTime} )`
+        } else {
+          displayTime = `${displayPeriod}`
+        }
+        this.dashboardParams.type = 'yc'
+        this.dashboardTime.displayTime = displayTime
+        this.$store.dispatch('SetDispalyTime',this.dashboardTime);
+        this.getData();
+      },
+
       getData(){
         getDashboardList(this.dashboardParams).then(response => {
           console.log(response)

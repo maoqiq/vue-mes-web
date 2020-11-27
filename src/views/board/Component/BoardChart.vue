@@ -19,8 +19,9 @@
             'alarm-level-3':item.level==3}"></i>
         </div>
       </div>
-      <div class="chart" v-if="item">
+      <div class="chart">
         <ve-histogram
+          ref="chart"
           height="240px"
           :resize-delay="0"
           :data="chartData"
@@ -43,10 +44,6 @@
           columns: [],
           rows: []
         },
-        chartData: {
-          columns: [],
-          rows: []
-        },
         chartSettings: {
           scale:[true, false]
         },
@@ -61,6 +58,11 @@
       // this.initChartData()
     },
     watch: {
+      chartType () {
+        this.$nextTick(_ => {
+          this.$refs[`chart`].echarts.resize()
+        })
+      },
       item: {
         handler (newValue, oldValue) {
           console.log(newValue)

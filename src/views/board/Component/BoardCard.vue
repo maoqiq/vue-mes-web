@@ -1,6 +1,6 @@
 <template> 
   <div class="board-layout">
-    <el-card class="box-card" :body-style="{ padding: '14px 0 0' }">
+    <el-card class="box-card" :body-style="{ padding: '14px 0 0', height: '200px' }">
       <div slot="header">
         <div style="margin:-18px -20px;" class="clearfix">
           <div class="title">{{item.machine_id}} 号纺机</div>
@@ -20,8 +20,8 @@
         </div>
       </div>
       <div class="text-center">
-        <div class="item" v-for="spindle in item.rot_id" :key="spindle">
-          {{spindle}}
+        <div class="item" v-for="spindle in spindleList" :key="spindle.key">
+          {{spindle.key}}: {{spindle.value}}
         </div>
       </div>
     </el-card>
@@ -34,13 +34,28 @@
     props: ['item'],
     data() {
       return {
+        spindleList: []
       }
     },
     created() {
       console.log(this.item)
+      this.handleSpindle()
     },
     methods: {
-
+      handleSpindle(){
+        this.spindleList = []
+        this.item.rot_id.forEach(element => {
+          console.log(element)
+          for (const key in element) {
+                if (element.hasOwnProperty(key)) {
+                  let spindleItem = {}
+                  spindleItem.key = key
+                  spindleItem.value = element[key]
+                  this.spindleList.push(spindleItem)
+                }
+              }
+        });
+      }
     }
   }
 </script>

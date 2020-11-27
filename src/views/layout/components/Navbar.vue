@@ -3,14 +3,14 @@
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
     <breadcrumb></breadcrumb>
     <span v-if="showBoardDate" class="board-date">
-      {{dashboardDate.format_time}} ( {{dashboardDate.start_time}} -
-      {{dashboardDate.end_time}} )
+      {{displayTime}}
     </span>
   </el-menu>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import store from '../../../store'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
@@ -28,7 +28,8 @@ export default {
   data() {
     return {
       showBoardDate: true,
-      dashboardDate: null
+      dashboardTime: null,
+      displayTime: ''
     }
   },
   watch: {
@@ -37,8 +38,8 @@ export default {
     }
   },
   created() {
-    this.dashboardDate = JSON.parse(localStorage.getItem('dashboardDate'))
-    console.log(this.dashboardDate)
+    console.log(this.$route)
+    this.handleBoardDate()
   },
   mounted() {
 
@@ -53,13 +54,22 @@ export default {
       })
     },
     handleBoardDate() {
-      let parentMatched = this.$route.matched.filter(item => item.name)[0]
-      console.log(parentMatched)
-      if(parentMatched.meta.title === "看板"){
-        this.showBoardDate = true
-      } else {
-        this.showBoardDate = false
-      }
+      let self = this
+      setTimeout(()=>{
+        console.log(store)
+        self.dashboardTime = store.getters.dashboardTime
+        let parentMatched = self.$route&&self.$route.matched.filter(item => item.name)[0]
+        let path = self.$route&&self.$route.fullPath
+        console.log(self.dashboardTime)
+        if(parentMatched.meta.title === "看板"){
+          self.showBoardDate = true
+          if(path==self.dashboardTime.path){
+            self.displayTime = self.dashboardTime.displayTime
+          }
+        } else {
+          self.showBoardDate = false
+        }
+      },1000)
     }
   }
 }
