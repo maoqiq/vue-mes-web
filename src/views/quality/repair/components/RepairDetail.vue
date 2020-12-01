@@ -1,30 +1,46 @@
 <template> 
   <el-card class="form-container" shadow="never">
-    <el-form :model="repair" :rules="rules" ref="repairFrom" label-width="150px">
-      <el-form-item label="维修单编号：" prop="repairId">
-        <el-input v-model="repair.repairId"></el-input>
-      </el-form-item>
-      <el-form-item label="维修单类型：" prop="type">
-        <el-checkbox-group class="repair-checkbox" v-model="repair.checkList" @change="handleChange">
-          <el-checkbox :label="item.label" v-for="item of repairTypeList" :key="item.label"></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="维修单明细：" prop="detail">
-        <el-select v-model="repair.detail" placeholder="请选择机器号" clearable>
+    <el-form :model="createRepairParams" :rules="rules" ref="repairFrom" label-width="150px">
+      <el-form-item label="维修单类型：" prop="maintenance_type">
+        <el-select v-model="createRepairParams.maintenance_type" placeholder="请选择维修单类型" @change="typeChange" clearable>
           <el-option
-            v-for="item in 5"
-            :key="item"
-            :label="item"
-            :value="item">
+            v-for="item in repairTypeList"
+            :key="item.label"
+            :label="item.maintenance_type"
+            :value="item.maintenance_type">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="维修内容：">
+      <el-form-item v-if="createRepairParams.maintenance_type=='机器'" label="维修单明细：" prop="machine_id">
+        <el-select v-model="createRepairParams.machine_id" placeholder="请选择气流纺机" clearable>
+          <el-option
+            v-for="item in machineOptions"
+            :key="item.device_id"
+            :label="item.device_name"
+            :value="item.device_id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-else-if="createRepairParams.maintenance_type=='纱锭'" label="维修单明细：" prop="rot_id">
+        <el-select v-model="createRepairParams.machine_id" placeholder="请选择气流纺机" clearable>
+          <el-option
+            v-for="item in machineOptions"
+            :key="item.device_id"
+            :label="item.device_name"
+            :value="item.device_id">
+          </el-option>
+        </el-select>
+        <el-input style="width: 203px" v-model="createRepairParams.rot_id" placeholder="请输入纱锭编号"></el-input>
+      </el-form-item>
+      <el-form-item v-else label="维修单明细：" prop="maintenance_detail">
+        <el-input style="width: 203px" v-model="createRepairParams.maintenance_detail" placeholder="请输入维修明细"></el-input>
+      </el-form-item>
+      <el-form-item label="维修内容：" prop="remarks">
         <el-input
           placeholder="请输入维修内容"
           type="textarea"
           :rows="3"
-          v-model="repair.text"></el-input>
+          v-model="createRepairParams.remarks"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('repairFrom')">报修</el-button>
@@ -34,16 +50,17 @@
   </el-card>
 </template>
 <script>
-  import SingleUpload from '@/components/Upload/singleUpload'
+  import { machineDropDown } from '@/api/machinePanelList'
+  import { getRepairTypeList,createRepair } from '@/api/repairInfo'
   const defaultRepair={
-    repairId: '',
-    checkList: [],
-    detail: '',
-    text: ''
+    maintenance_type: '机器',
+    maintenance_detail: '',
+    remarks: '',
+    machine_id: '',
+    rot_id: ''
   };
   export default {
     name: 'BrandDetail',
-    components:{SingleUpload},
     props: {
       isEdit: {
         type: Boolean,
@@ -52,75 +69,77 @@
     },
     data() {
       return {
-        repair:Object.assign({}, defaultRepair),
+        createRepairParams:Object.assign({}, defaultRepair),
         rules: {
-          // name: [
-          //   {required: true, message: '请输入品牌名称', trigger: 'blur'},
-          //   {min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur'}
-          // ],
-          // logo: [
-          //   {required: true, message: '请输入品牌logo', trigger: 'blur'}
-          // ],
-          // sort: [
-          //   {type: 'number', message: '排序必须为数字'}
-          // ]
+          maintenance_type: {required: true, message: '请选择维修单类型', trigger: 'blur'},
+          machine_id: {required: true, message: '请选择气流纺机', trigger: 'blur'},
+          rot_id: {required: true, message: '请选择气流纺机并输入纱锭编号', trigger: 'blur'},
+          maintenance_detail: {required: true, message: '请完善维修单明细', trigger: 'blur'}
         },
-        checkList: [],
-        repairTypeList: [
-          {
-            label: '机器'
-          },
-          {
-            label: '纱锭'
-          },
-          {
-            label: '其他'
-          }
-        ]
+        machineOptions: [],
+        repairTypeList: []
       }
     },
     created() {
+      this.getMachineDropDownList();
+      this.getRepairDropDownList();
       if (this.isEdit) {
         // getBrand(this.$route.query.id).then(response => {
-        //   this.repair = response.data;
+        //   this.createRepairParams = response.data;
         // });
       }else{
-        this.repair = Object.assign({}, defaultRepair);
+        this.createRepairParams = Object.assign({}, defaultRepair);
       }
     },
     methods: {
-      onSubmit(formName) {
-        this.$refs[formName].validate((valid) => {
+      getMachineDropDownList() {
+        this.machineOptions = [];
+        machineDropDown().then(response => {
+          this.machineOptions = response.result;
+        });
+      },
+      getRepairDropDownList(){
+        getRepairTypeList().then(response => {
+          console.log(response)
+          this.repairTypeList = response.result;
+        });
+      },
+      typeChange(event){
+        this.createRepairParams = Object.assign({}, defaultRepair)
+        this.createRepairParams.maintenance_type = event
+        console.log(this.createRepairParams)
+      },
+      handleParams(){
+        switch (this.createRepairParams.maintenance_type) {
+          case '机器':
+            this.createRepairParams.maintenance_detail = `${this.createRepairParams.machine_id}号纺机`
+            break;
+          case '纱锭':
+            this.createRepairParams.maintenance_detail = `${this.createRepairParams.rot_id}号纱锭 - ${this.createRepairParams.machine_id}号纺机`
+            break;
+          default:
+            break;
+        }
+      },
+      onSubmit() {
+        this.$refs['repairFrom'].validate((valid) => {
           if (valid) {
-            this.$confirm('是否提交数据', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              if (this.isEdit) {
-                // updateBrand(this.$route.query.id, this.brand).then(response => {
-                //   this.$refs[formName].resetFields();
-                //   this.$message({
-                //     message: '修改成功',
-                //     type: 'success',
-                //     duration:1000
-                //   });
-                //   this.$router.back();
-                // });
-              } else {
-                // createBrand(this.brand).then(response => {
-                //   this.$refs[formName].resetFields();
-                //   this.brand = Object.assign({},defaultBrand);
-                //   this.$message({
-                //     message: '提交成功',
-                //     type: 'success',
-                //     duration:1000
-                //   });
-                // });
-              }
-              this.$router.push({path:'/quality/repair'});
-            });
+            if (this.isEdit) {
 
+            } else {
+              this.handleParams()
+              console.log(this.createRepairParams)
+              createRepair(this.createRepairParams).then(response => {
+                // this.createRepairParams = Object.assign({}, defaultRepair)
+                this.$message({
+                  message: '提交成功',
+                  type: 'success',
+                  duration:1000
+                });
+              });
+            }
+            // this.$refs['repairFrom'].resetFields();
+            this.$router.push({path:'/quality/repair'});
           } else {
             this.$message({
               message: '验证失败',

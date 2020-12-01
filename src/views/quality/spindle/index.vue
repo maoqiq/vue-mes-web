@@ -44,7 +44,7 @@
             </el-col>
             <el-col :span="9">
               <el-form-item label="纱锭编号：">
-                <el-input style="width: 203px" v-model="listQuery.rot_id" placeholder="纱锭编号"></el-input>
+                <el-input style="width: 203px" v-model="listQuery.rot_id" placeholder="请输入纱锭编号"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="5">
@@ -198,14 +198,6 @@ import { formatDate } from '@/utils/date'
       this.getSpindleTableList()
     },
     watch: {
-      // selectMachineValue: function (newValue) {
-      //   if (newValue != null && newValue.length == 2) {
-      //     this.listQuery.machine_id = newValue[1];
-      //   } else {
-      //     this.listQuery.machine_id = null;
-      //   }
-
-      // }
     },
     filters: {
       formatDate(time) {
@@ -286,8 +278,8 @@ import { formatDate } from '@/utils/date'
           this.getListParams[key] = this.listQuery[key]
           }
         }
-        this.getListParams.start_time = this.listQuery.timeValue?this.listQuery.timeValue[0]:'',
-        this.getListParams.end_time = this.listQuery.timeValue?this.listQuery.timeValue[1]:'',
+        this.getListParams.start_time = this.listQuery.timeValue?this.listQuery.timeValue[0]:''
+        this.getListParams.end_time = this.listQuery.timeValue?this.listQuery.timeValue[1]:''
         console.log(this.getListParams)
       },
 

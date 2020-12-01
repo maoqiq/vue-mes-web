@@ -183,14 +183,6 @@ import { formatDate } from '@/utils/date'
       this.getMachineTableList();
     },
     watch: {
-      // selectMachineValue: function (newValue) {
-      //   if (newValue != null && newValue.length == 2) {
-      //     this.listQuery.machine_id = newValue[1];
-      //   } else {
-      //     this.listQuery.machineIds = null;
-      //   }
-
-      // }
     },
     filters: {
       formatDate(time) {

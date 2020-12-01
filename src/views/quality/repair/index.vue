@@ -6,12 +6,12 @@
           <el-row :gutter="20">
             <el-col :span="7">
               <el-form-item label="维修状态：">
-                <el-select v-model="listQuery.repairStatus" placeholder="请选择维修状态" clearable>
+                <el-select v-model="listQuery.status" placeholder="请选择维修状态" clearable>
                   <el-option
                     v-for="item in repairStatus"
-                    :key="item.value"
+                    :key="item.label"
                     :label="item.label"
-                    :value="item.value">
+                    :value="item.label">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -31,12 +31,12 @@
           <el-row :gutter="20">
             <el-col :span="13">
               <el-form-item label="维修类型：">
-                <el-select v-model="listQuery.repairType" placeholder="请选择维修类型" clearable>
+                <el-select v-model="listQuery.maintenance_type" placeholder="请选择维修类型" clearable>
                   <el-option
                     v-for="item in repairTypeList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.label"
+                    :label="item.maintenance_type"
+                    :value="item.maintenance_type">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -108,9 +108,9 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.pageSize"
+        :page-size="listQuery.limit"
         :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.pageNum"
+        :current-page.sync="listQuery.page"
         :total="total">
       </el-pagination>
     </div>
@@ -118,95 +118,111 @@
 </template>
 <script>
 
-  import repairListMockData from '@/mock/repairList.js'
+  import { searchRepairList, getRepairTypeList } from '@/api/repairInfo'
+  import { formatDate } from '@/utils/date'
 
   const defaultListQuery = {
-    keyword: null,
-    pageNum: 1,
-    pageSize: 5,
-    repairStatus: null,
-    timeValue: null,
-    repairType: null
+    status: '',
+    rot_id: '',
+    maintenance_type: '',
+    timeValue: [],
+    page: 1,
+    limit: 5
   };
+  const defaultParams = {
+    status: '',
+    rot_id: '',
+    maintenance_type: '',
+    start_time: '',
+    end_time: '',
+    page: 1,
+    limit: 5
+  }
   export default {
     name: "productList",
     data() {
       return {
-        repairListMockData,
         listQuery: Object.assign({}, defaultListQuery),
+        getListParams: Object.assign({}, defaultParams),
         repairList: [],
         total: null,
         listLoading: false,
-        // selectMachineValue: null,
-        multipleSelection: [],
-        machineOptions: [],
         repairStatus: [{
           value: 0,
           label: '维修中'
         },{
-          value: 0,
+          value: 1,
           label: '已完成'
         }],
-        repairTypeList: [{
-          value: 0,
-          label: '纱锭'
-        },{
-          value: 0,
-          label: '机器'
-        },{
-          value: 0,
-          label: '其他'
-        }],
-        classesOptions: [{
-          value: 0,
-          label: '01'
-        }, {
-          value: 1,
-          label: '02'
-        }, {
-          value: 2,
-          label: '03'
-        }, {
-          value: 3,
-          label: '04'
-        }]
+        repairTypeList: []
       }
     },
     created() {
-      console.log(this.machineListMockData);
-      this.getList();
+      this.defaultInit()
+      this.getRepairDropDownList();
+      this.getRepairList();
     },
     watch: {
-      // selectMachineValue: function (newValue) {
-      //   if (newValue != null && newValue.length == 2) {
-      //     this.listQuery.machineIds = newValue[1];
-      //   } else {
-      //     this.listQuery.machineIds = null;
-      //   }
-
-      // }
     },
     filters: {
 
     },
-    methods: {
-      getList() {
-        this.repairList = [];
-        for (let i = 0; i < 20; i++) {
-          this.repairList.push(this.repairListMockData);
-          this.total = 20;
-        }
-        // this.listLoading = true;
-        // fetchList(this.listQuery).then(response => {
-        //   this.listLoading = false;
-        //   this.machineList = response.data.list;
-        //   this.total = response.data.total;
-        // });
+    computed:{
+      endDate() {
+        return this.formatSelectDate(new Date());
       },
-
+      startDate() {
+        const start = new Date();
+        const startDate = start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+        const startString = this.formatSelectDate(startDate);
+        return startString;
+      }
+    },
+    methods: {
+      formatSelectDate(date) {
+        if (date == null || date === '') {
+          return '';
+        }
+        let unformatDate = null;
+        if(date instanceof Date){
+          unformatDate = date
+        } else {
+          unformatDate = new Date(date);
+        }
+        return formatDate(unformatDate, 'yyyy-MM-dd')
+      },
+      defaultInit() {
+        this.listQuery.timeValue?this.listQuery.timeValue[0] = this.startDate:this.listQuery.timeValue=[];
+        this.listQuery.timeValue?this.listQuery.timeValue[1] = this.endDate:this.listQuery.timeValue=[];
+        this.getListParams.start_time = this.startDate;
+        this.getListParams.end_time = this.endDate;
+      },
+      getRepairDropDownList(){
+        getRepairTypeList().then(response => {
+          console.log(response)
+          this.repairTypeList = response.result;
+        });
+      },
+      getRepairList() {
+        searchRepairList(this.getListParams).then(response=>{
+          this.repairList = response.result
+          this.total = response.total
+          this.listLoading = false
+        })
+      },
       handleSearchList() {
-        this.listQuery.pageNum = 1;
-        this.getList();
+        this.settingSearchParams();
+        this.getRepairList();
+      },
+      settingSearchParams(){
+        this.listQuery.page = 1;
+        for (const key in this.listQuery) {
+          if(this.getListParams.hasOwnProperty(key)){
+          this.getListParams[key] = this.listQuery[key]
+          }
+        }
+        this.getListParams.start_time = this.listQuery.timeValue?this.listQuery.timeValue[0]:''
+        this.getListParams.end_time = this.listQuery.timeValue?this.listQuery.timeValue[1]:''
       },
       handleResetSearch() {
         this.selectMachineValue = [];
@@ -217,13 +233,13 @@
       },
 
       handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
-        this.getList();
+        this.listQuery.page = 1;
+        this.listQuery.limit = val;
+        this.getRepairList();
       },
       handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
-        this.getList();
+        this.listQuery.page = val;
+        this.getRepairList();
       }
     }
   }
