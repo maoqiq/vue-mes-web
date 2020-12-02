@@ -1,6 +1,6 @@
 <template> 
   <el-card class="batch-operate-container" shadow="never">
-    <el-form :model="listQuery" :rules="rules" ref="form" :label-position="right" label-width="120px">
+    <el-form :model="listQuery" ref="form" label-position="right" label-width="120px">
       <el-form-item label="指标类型：">
         <el-select v-model="listQuery.type" placeholder="请选择指标类型" clearable>
           <el-option
@@ -15,7 +15,7 @@
         <el-select v-model="listQuery.level" placeholder="请选择预警等级" @change="levelChange" clearable>
           <el-option
             v-for="item in levelList"
-            :key="item"
+            :key="item.value"
             :label="item.value"
             :value="item">
           </el-option>

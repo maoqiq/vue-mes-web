@@ -52,14 +52,20 @@
             displayPeriod = element.label
           }
         });
-        if(date.period!="-1"){
+        if(date.period=="-1"){
+          displayTime = `${displayPeriod}`
+        } else if(date.period=="0"){
+          let startTime = this.formatSelectDate(date.start_time)
+          let endTime = this.formatSelectDate(date.end_time)
+          this.dashboardParams.start_time = startTime;
+          this.dashboardParams.end_time = endTime;
+          displayTime = `${displayPeriod} ( ${endTime} )`
+        } else{
           let startTime = this.formatSelectDate(date.start_time)
           let endTime = this.formatSelectDate(date.end_time)
           this.dashboardParams.start_time = startTime;
           this.dashboardParams.end_time = endTime;
           displayTime = `${displayPeriod} ( ${startTime} 至 ${endTime} )`
-        } else {
-          displayTime = `${displayPeriod}`
         }
         this.dashboardParams.type = 'eff'
         this.dashboardTime.displayTime = displayTime

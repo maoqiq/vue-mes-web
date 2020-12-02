@@ -14,7 +14,7 @@
       <el-form-item label="时间：" prop="time">
         <template>
           <el-checkbox-group v-model="listQuery.period" size="medium" @change="handleDateTabChange" :disabled="listQuery.timeValue&&listQuery.timeValue.length!=0">
-            <el-checkbox-button v-for="date in dateList" :label="date.value" :key="date.label">{{date.label}}</el-checkbox-button>
+            <el-checkbox-button v-for="date in dateList" :label="date.value" :key="date.value">{{date.label}}</el-checkbox-button>
           </el-checkbox-group>
           <div class="date-group">
             <el-date-picker
