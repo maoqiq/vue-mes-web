@@ -122,7 +122,7 @@
         }
       },
       onSubmit() {
-        this.$refs['repairFrom'].validate((valid) => {
+        this.$refs.repairFrom.validate((valid) => {
           if (valid) {
             if (this.isEdit) {
 

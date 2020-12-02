@@ -174,8 +174,6 @@ import { formatDate } from '@/utils/date'
         spindleList: [],
         total: null,
         listLoading: false,
-        // selectMachineValue: null,
-        multipleSelection: [],
         machineOptions: [],
         shiftOptions: [{
           value: 1,

@@ -1,28 +1,23 @@
 <template> 
-  <div class="tab-item" :v-for="i in items">
-    <div class="item">
-      <label>{{1}}</label>
-      <span>{{}}</span>
-    </div>
+  <div class="tab-item" v-html="currentStr">
   </div>
 </template>
 <script>
 
   export default {
     name: 'SourceTab',
-    props: {
-      items: {
-        type: Object,
-        default: null
-      }
-    },
+    props: ['item'],
     data() {
       return {
-
+        currentStr:''
       }
     },
+    watch: {
+      item() {
+          this.currentStr = this.item&&this.item.replace(/ /g,'&nbsp;').replace(/\n/g,'<br/>')
+　　　　  }
+    },
     created() {
-      console.log(this.items)
     },
     methods: {
 

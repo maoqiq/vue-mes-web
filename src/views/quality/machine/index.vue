@@ -272,7 +272,8 @@ import { formatDate } from '@/utils/date'
       },
       handleJumpOriginData(index,row){
         console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/sourceData',query:{id:row.id}})
+        const sourceDate = this.formatSelectDate(row.date);
+        this.$router.push({path:'/quality/sourceData',query:{machine_id: row.machine_id,shift_id: row.shift_id,date: sourceDate}})
       },
       handleJumpSpindleList(index,row){
         this.getListParams.machine_id = [row.machine_id];

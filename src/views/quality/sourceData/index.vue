@@ -2,38 +2,37 @@
   <div class="app-container">
     <el-card class="filter-container" shadow="never">
       <div class="form-search" style="margin-top: 10px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="140px" :label-position="'right'">
+        <el-form :inline="true"  ref="sourceForm" :rules="rules" :model="listQuery" size="small" label-width="160px" :label-position="'right'">
           <el-row :gutter="20">
-            <el-col :span="7">
-              <el-form-item label="所属气流纺机编号：">
-                <el-select v-model="listQuery.machineIds" multiple placeholder="请选择气流纺机" clearable>
+            <el-col :span="8">
+              <el-form-item label="所属气流纺机编号：" prop="machine_id">
+                <el-select v-model="listQuery.machine_id" placeholder="请选择气流纺机" clearable>
                   <el-option
                     v-for="item in machineOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.device_id"
+                    :label="item.device_name"
+                    :value="item.device_id">
                   </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="10">
-              <el-form-item label="提交时间：">
+              <el-form-item label="提交时间：" prop="date">
                 <el-date-picker
-                  v-model="listQuery.timeValue"
-                  type="daterange"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  range-separator="至">
+                  v-model="listQuery.date"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-form-item label="班次编号：">
-                <el-select v-model="listQuery.classesNo" placeholder="全部" clearable>
+              <el-form-item label="班次编号：" prop="shift_id">
+                <el-select v-model="listQuery.shift_id" placeholder="全部" clearable>
                   <el-option
-                    v-for="item in classesOptions"
+                    v-for="item in shiftOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -67,14 +66,15 @@
     </el-card>
     <el-card class="-container">
       <el-tabs v-model="tabsActiveName" @tab-click="handleClick">
-        <el-tab-pane label="PRODUCTION PARAMETER" name="first"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="PRODUCTION DATA" name="second"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="SECTION DATA" name="third"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="QUALITY DATA" name="fourth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="OFF-STANDARD" name="fifth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="REFERENCE" name="sixth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="YM LOCKS" name="seventh"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
-        <el-tab-pane label="ERRORS" name="eighth"><source-tab :items="machineListMockData"></source-tab></el-tab-pane>
+        <el-tab-pane label="PRODUCTION PARAMETER" name="first"><source-tab :item="items&&items.PRODUCTION_PARAMETER"></source-tab></el-tab-pane>
+        <el-tab-pane label="PRODUCTION DATA" name="second"><source-tab :item="items&&items.PRODUCTION_DATA"></source-tab></el-tab-pane>
+        <el-tab-pane label="INTERMEDIATE REPORT" name="third"><source-tab :item="items&&items.INTERMEDIATE_REPORT"></source-tab></el-tab-pane>
+        <el-tab-pane label="SECTION DATA" name="fourth"><source-tab :item="items&&items.SECTION_DATA"></source-tab></el-tab-pane>
+        <el-tab-pane label="QUALITY DATA" name="fifth"><source-tab :item="items&&items.QUALITY_DATA"></source-tab></el-tab-pane>
+        <el-tab-pane label="OFF-STANDARD" name="sixth"><source-tab :item="items&&items.OFF_STANDARD"></source-tab></el-tab-pane>
+        <el-tab-pane label="REFERENCE" name="seventh"><source-tab :item="items&&items.REFERENCE"></source-tab></el-tab-pane>
+        <el-tab-pane label="YM LOCKS" name="eighth"><source-tab :item="items&&items.YM_LOCKS"></source-tab></el-tab-pane>
+        <el-tab-pane label="ERRORS" name="nineth"><source-tab :item="items&&items.ERRORS"></source-tab></el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -82,122 +82,91 @@
 <script>
 
   import SourceTab from './components/SourceTab'
-  import machineListMockData from '@/mock/machineList.js'
+  import { machineDropDown } from '@/api/machinePanelList'
+  import { getSourceData } from '@/api/sourceData'
 
   const defaultListQuery = {
-    keyword: null,
-    pageNum: 1,
-    pageSize: 5,
-    machineIds: null,
-    timeValue: null,
-    classesNo: null
+    machine_id: '',
+    shift_id: '',
+    date: ''
   };
   export default {
     name: "sourceData",
     components: { SourceTab },
     data() {
       return {
-        machineListMockData,
+        rules: {
+          machine_id: {required: true, message: '请选择气流纺机', trigger: 'blur'},
+          date: {required: true, message: '请选择日期', trigger: 'blur'},
+          shift_id: {required: true, message: '请选择班次编号', trigger: 'blur'}
+        },
         listQuery: Object.assign({}, defaultListQuery),
         machineList: [],
         total: null,
         listLoading: false,
-        // selectMachineValue: null,
-        multipleSelection: [],
         machineOptions: [],
-        classesOptions: [{
-          value: 0,
-          label: '01'
-        }, {
+        shiftOptions: [{
           value: 1,
-          label: '02'
+          label: '1'
         }, {
           value: 2,
-          label: '03'
+          label: '2'
         }, {
           value: 3,
-          label: '04'
+          label: '3'
+        }, {
+          value: 4,
+          label: '4'
         }],
-        tabsActiveName: 'first'
+        tabsActiveName: 'first',
+        items: null
       }
     },
     created() {
-      console.log(this.machineListMockData);
-      this.getList();
-      this.getMachineNoList()
+      console.log(this.listQuery)
+      this.getMachineDropDownList()
+      this.getSourceDataWithRouteParams()
     },
     watch: {
-      // selectMachineValue: function (newValue) {
-      //   if (newValue != null && newValue.length == 2) {
-      //     this.listQuery.machineIds = newValue[1];
-      //   } else {
-      //     this.listQuery.machineIds = null;
-      //   }
-
-      // }
     },
     filters: {
 
     },
     methods: {
-      getList() {
-        this.machineList = [];
-        for (let i = 0; i < 20; i++) {
-          this.machineList.push(this.machineListMockData);
-          this.total = 50;
-        }
-        console.log(this.machineList)
-        // this.listLoading = true;
-        // fetchList(this.listQuery).then(response => {
-        //   this.listLoading = false;
-        //   this.machineList = response.data.list;
-        //   this.total = response.data.total;
-        // });
+      getSourceDataInfo() {
+        this.$refs.sourceForm.validate(valid => {
+          if (valid) {
+            getSourceData(this.listQuery).then(response => {
+                console.log(response.result)
+                this.items = response.result[0]
+              });
+          }
+        })
       },
-      getMachineNoList() {
-        this.machineOptions = [];
-        for (let index = 0; index < 28; index++) {
-          this.machineOptions.push({label: `${index+1}号机器`, value: index+1});
+      getSourceDataWithRouteParams(){
+        const routeParams = this.$route.query
+        if(routeParams){
+          this.listQuery = routeParams
+          getSourceData(this.listQuery).then(response => {
+            console.log(response.result)
+            this.items = response.result[0]
+          });
         }
-        // fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
-        //   this.machineOptions = [];
-        //   let brandList = response.data.list;
-        //   for (let i = 0; i < brandList.length; i++) {
-        //     this.machineOptions.push({label: brandList[i].name, value: brandList[i].id});
-        //   }
-        // });
+      },
+      getMachineDropDownList() {
+        this.machineOptions = [];
+        machineDropDown().then(response => {
+          console.log(response)
+          this.machineOptions = response.result;
+        });
       },
       // TODO get each source data
 
       handleSearchList() {
-        this.listQuery.pageNum = 1;
-        this.getList();
+        this.getSourceDataInfo();
       },
       handleResetSearch() {
-        this.selectMachineValue = [];
         this.listQuery = Object.assign({}, defaultListQuery);
-      },
-
-      handleSizeChange(val) {
-        this.listQuery.pageNum = 1;
-        this.listQuery.pageSize = val;
-        this.getList();
-      },
-      handleCurrentChange(val) {
-        this.listQuery.pageNum = val;
-        this.getList();
-      },
-      handleSelectionChange(val) {
-        console.log(val)
-        this.multipleSelection = val;
-      },
-
-      handleJumpOriginData(index,row){
-        console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/sourceData',query:{id:row.id}})
-      },
-      handleJumpSpindleList(index,row){
-        this.$router.push({path:'/quality/spindle',query:{id:row.id}});
       },
 
       handleClick(tab, event) {
