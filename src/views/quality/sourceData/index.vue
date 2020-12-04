@@ -61,14 +61,16 @@
         </el-form>
       </div>
     </el-card>
-    <el-card class="info-container">
-      <p>INTERMEDIATE REPORT</p>
+    <el-card>
+      <div class="info-container">
+        <p>INTERMEDIATE REPORT</p>
+        <source-tab :item="items&&items.INTERMEDIATE_REPORT"></source-tab>
+      </div>
     </el-card>
-    <el-card class="-container">
+    <el-card>
       <el-tabs v-model="tabsActiveName" @tab-click="handleClick">
         <el-tab-pane label="PRODUCTION PARAMETER" name="first"><source-tab :item="items&&items.PRODUCTION_PARAMETER"></source-tab></el-tab-pane>
         <el-tab-pane label="PRODUCTION DATA" name="second"><source-tab :item="items&&items.PRODUCTION_DATA"></source-tab></el-tab-pane>
-        <el-tab-pane label="INTERMEDIATE REPORT" name="third"><source-tab :item="items&&items.INTERMEDIATE_REPORT"></source-tab></el-tab-pane>
         <el-tab-pane label="SECTION DATA" name="fourth"><source-tab :item="items&&items.SECTION_DATA"></source-tab></el-tab-pane>
         <el-tab-pane label="QUALITY DATA" name="fifth"><source-tab :item="items&&items.QUALITY_DATA"></source-tab></el-tab-pane>
         <el-tab-pane label="OFF-STANDARD" name="sixth"><source-tab :item="items&&items.OFF_STANDARD"></source-tab></el-tab-pane>
@@ -183,7 +185,11 @@
 }
 .info-container{
   margin-top: 20px;
-
+  display: flex;
+  justify-content: flex-start;
+  p{
+    margin-right: 20px;
+  }
 }
 </style>
 
