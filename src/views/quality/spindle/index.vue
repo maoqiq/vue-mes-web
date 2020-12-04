@@ -91,7 +91,7 @@
             </div>
             <span>{{scope.row.alarm_level+'级'}}</span></template>
         </el-table-column>
-        <el-table-column label="时间" align="center">
+        <el-table-column label="时间" width="140" align="center">
           <template slot-scope="scope">
             {{scope.row.date|formatDate}}
           </template>

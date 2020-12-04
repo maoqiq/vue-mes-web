@@ -93,36 +93,36 @@
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="消息序号" width="130" align="center">
+        <el-table-column label="消息序号" align="center">
           <template slot-scope="scope">{{scope.row.message_id}}</template>
         </el-table-column>
-        <el-table-column :label="listQuery.pointType.label" width="160" align="center">
+        <el-table-column :label="listQuery.pointType.label" align="center">
           <template slot-scope="scope">{{scope.row.count}}</template>
         </el-table-column>
-        <el-table-column label="报警等级" width="140" align="center">
+        <el-table-column label="报警等级" align="center">
           <template slot-scope="scope">
             {{scope.row.alarm_level}}
           </template>
         </el-table-column>
-        <el-table-column label="锭位号码(ROT)" width="140" align="center">
+        <el-table-column label="锭位号码(ROT)" align="center">
           <template slot-scope="scope">
             {{scope.row.rot_id}}
           </template>
         </el-table-column>
-        <el-table-column label="所属气流纺机号" width="140" align="center">
+        <el-table-column label="所属气流纺机号" align="center">
           <template slot-scope="scope">
             {{scope.row.machine_id}}
           </template>
         </el-table-column>
-        <el-table-column label="所属班次号" width="140" align="center">
+        <el-table-column label="所属班次号" align="center">
           <template slot-scope="scope">{{scope.row.shift_id}}</template>
         </el-table-column>
-        <el-table-column label="接收时间" align="center">
+        <el-table-column label="接收时间" width="180" align="center">
           <template slot-scope="scope">
             {{scope.row.alarm_time|formatDate}}
           </template>
         </el-table-column>
-        <el-table-column label="消息状态" width="140" align="center">
+        <el-table-column label="消息状态" align="center">
           <template slot-scope="scope">{{scope.row.message_status}}</template>
         </el-table-column>
       </el-table>

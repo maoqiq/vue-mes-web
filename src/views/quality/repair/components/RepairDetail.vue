@@ -45,6 +45,7 @@
       <el-form-item>
         <el-button type="primary" @click="onSubmit('repairFrom')">报修</el-button>
         <el-button v-if="!isEdit" @click="resetForm('repairFrom')">重置</el-button>
+        <el-button v-if="!isEdit" @click="goBack">取消</el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -150,9 +151,12 @@
           }
         });
       },
+      goBack(){
+        this.$router.go(-1);
+      },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.brand = Object.assign({}, defaultRepair);
+        this.createRepairParams = Object.assign({}, defaultRepair);
       },
       handleChange(arr){
         if(arr.length > 1){
