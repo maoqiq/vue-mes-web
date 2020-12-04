@@ -284,10 +284,13 @@ import { formatDate } from '@/utils/date'
       handleSizeChange(val) {
         this.listQuery.page = 1;
         this.listQuery.limit = val;
+        this.getListParams.page = 1;
+        this.getListParams.limit = val;
         this.getSpindleTableList();
       },
       handleCurrentChange(val) {
         this.listQuery.page = val;
+        this.getListParams.page = val;
         this.getSpindleTableList();
       },
 

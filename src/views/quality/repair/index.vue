@@ -235,10 +235,13 @@
       handleSizeChange(val) {
         this.listQuery.page = 1;
         this.listQuery.limit = val;
+        this.getListParams.page = 1;
+        this.getListParams.limit = val;
         this.getRepairList();
       },
       handleCurrentChange(val) {
         this.listQuery.page = val;
+        this.getListParams.page = val;
         this.getRepairList();
       }
     }

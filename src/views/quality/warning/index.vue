@@ -295,10 +295,13 @@
       handleSizeChange(val) {
         this.listQuery.page = 1;
         this.listQuery.limit = val;
+        this.getListParams.page = 1;
+        this.getListParams.limit = val;
         this.getWarningTableList();
       },
       handleCurrentChange(val) {
         this.listQuery.page = val;
+        this.getListParams.page = val;
         this.getWarningTableList();
       },
       handleJumpDetail(index,row){
