@@ -1,6 +1,6 @@
 <template> 
   <div class="app-container">
-    <el-card class="filter-container" shadow="never">
+    <el-card class="filter-container margin-bottom" shadow="never">
       <div class="form-search" style="margin-top: 10px">
         <el-form :inline="true"  ref="sourceForm" :rules="rules" :model="listQuery" size="small" label-width="160px" :label-position="'right'">
           <el-row :gutter="20">
@@ -61,7 +61,7 @@
         </el-form>
       </div>
     </el-card>
-    <el-card>
+    <el-card class="margin-bottom">
       <div class="info-container">
         <p>INTERMEDIATE REPORT</p>
         <source-tab :item="items&&items.INTERMEDIATE_REPORT"></source-tab>
@@ -178,6 +178,9 @@
   }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+.margin-bottom{
+  margin-bottom: 20px;
+}
 .filter-container{
   .submit-group{
     display: flex;

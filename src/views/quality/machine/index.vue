@@ -73,7 +73,7 @@
         <el-table-column label="气流纺机序号" width="130" align="center">
           <template slot-scope="scope">{{scope.row.machine_id}}</template>
         </el-table-column>
-        <el-table-column label="时间" align="center">
+        <el-table-column label="时间" width="160" align="center">
           <template slot-scope="scope">{{scope.row.date|formatDate}}</template>
         </el-table-column>
         <el-table-column label="班次" width="140" align="center">
@@ -100,7 +100,7 @@
         <el-table-column label="设备状态" width="140" align="center">
           <template slot-scope="scope">{{scope.row.device_status}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="260" align="center">
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"

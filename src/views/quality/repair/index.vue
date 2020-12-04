@@ -98,7 +98,7 @@
           </template>
         </el-table-column>
         <el-table-column label="备注" align="center">
-          <template slot-scope="scope">{{scope.row.remarks}}</template>
+          <template slot-scope="scope">{{scope.row.remarks?scope.row.remarks:'-'}}</template>
         </el-table-column>
       </el-table>
     </div>

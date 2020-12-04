@@ -79,7 +79,7 @@
           <template slot-scope="scope">{{scope.row.rot_id}}</template>
         </el-table-column>
         <el-table-column label="状态" width="128" align="center">
-          <template slot-scope="scope">{{scope.row.status}}</template>
+          <template slot-scope="scope">{{scope.row.status?scope.row.status:'-'}}</template>
         </el-table-column>
         <el-table-column label="预警等级" width="128" align="center">
           <template slot-scope="scope">
@@ -91,7 +91,7 @@
             </div>
             <span>{{scope.row.alarm_level+'级'}}</span></template>
         </el-table-column>
-        <el-table-column label="时间" width="140" align="center">
+        <el-table-column label="时间" width="146" align="center">
           <template slot-scope="scope">
             {{scope.row.date|formatDate}}
           </template>
