@@ -20,8 +20,8 @@ export function login(name, password) {
 
 export function logout() {
   return request({
-    url: '/admin/logout',
-    method: 'post'
+    url: '/api/logout ',
+    method: 'get'
   })
 }
 
