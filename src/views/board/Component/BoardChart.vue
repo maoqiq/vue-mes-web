@@ -23,11 +23,13 @@
         <ve-histogram
           ref="chart"
           height="240px"
+          width="284px"
           :resize-delay="0"
           :data="chartData"
           :legend-visible="false"
           :loading="loading"
-          :settings="chartSettings"></ve-histogram>
+          :settings="chartSettings"
+          :extend="extend"></ve-histogram>
       </div>
     </el-card>
   </div>
@@ -43,6 +45,13 @@
         chartData: {
           columns: [],
           rows: []
+        },
+        extend: {
+          series: {
+            label: { show: true, position: "top" },
+            barMaxWidth: 26
+          },
+
         },
         chartSettings: {
           scale:[true, false]
@@ -79,26 +88,24 @@
     },
     methods: {
       initChartData(){
-        setTimeout(() => {
-          this.chartType = this.item.type+'值'
-            this.chartData = {
-              columns: ['批次', this.chartType],
-              rows: []
+        this.chartType = this.item.type+'值'
+        this.chartData = {
+          columns: ['批次', this.chartType],
+          rows: []
+        }
+        this.item.shift.forEach(element => {
+          for (const key in element) {
+            if (element.hasOwnProperty(key)) {
+              const chartElement = element[key];
+              let rowsItem = {}
+              rowsItem['批次'] = `${key}批次`
+              rowsItem[this.chartType] = chartElement
+              this.chartData.rows.push(rowsItem)
             }
-            this.item.shift.forEach(element => {
-              for (const key in element) {
-                if (element.hasOwnProperty(key)) {
-                  const chartElement = element[key];
-                  let rowsItem = {}
-                  rowsItem['批次'] = key
-                  rowsItem[this.chartType] = chartElement
-                  this.chartData.rows.push(rowsItem)
-                }
-              }
-            });
-            this.dataEmpty = false;
-            this.loading = false
-        }, 1000)
+          }
+        });
+        this.dataEmpty = false;
+        this.loading = false
       }
     }
   }
