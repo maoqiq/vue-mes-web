@@ -11,7 +11,7 @@
           <i class="el-icon-search"></i>
           暂无数据
         </el-col>
-        <el-col v-else>
+        <el-col class="stop-catch" v-else>
           <template v-if="type=='yc'||type=='eff'">
             <div v-if="selectedTabStr=='表格'">
               <el-col :span="6" v-for="(item,index) in listData"
@@ -26,7 +26,7 @@
               </el-col>
             </div>
             <div v-if="selectedTabStr=='轮播'">
-              <el-carousel :interval="2000" arrow="never" indicator-position="none">
+              <el-carousel :interval="30000" arrow="never" indicator-position="none">
                 <el-carousel-item>
                   <el-col :span="6" v-for="(item,index) in listData"
                     :key="index">
@@ -110,6 +110,9 @@
     font-size: 50px;
     margin: 20px;
   }
+}
+.stop-catch{
+  pointer-events: none;
 }
 </style>
 

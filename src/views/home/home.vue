@@ -14,7 +14,7 @@
           <div class="out-border">
             <div class="layout-title">前端项目</div>
             <div class="color-main address-content">
-              <a href="#">立颖纺纱MES</a>
+              <a href="#">立颍纺纱MES</a>
             </div>
           </div>
         </el-col>

@@ -10,7 +10,7 @@
           <div style="text-align: center">
             <svg-icon icon-class="login-mall" style="width: 56px;height: 56px;color: #409EFF"></svg-icon>
           </div>
-        <h2 class="login-title color-main">立颖纺纱MES</h2>
+        <h2 class="login-title color-main">立颍纺纱MES</h2>
         </div>
         <el-form-item prop="name">
           <el-input name="name"
@@ -42,7 +42,7 @@
           <el-button style="width: 100%" type="primary" :loading="loading" @click.native.prevent="handleLogin">
             登录
           </el-button>
-          <p class="copyright">@copyright 颖上立颖纺织有限公司</p>
+          <p class="copyright">@copyright 颍上立颍纺织有限公司</p>
         </el-form-item>
       </el-form>
     </el-card>

@@ -2,7 +2,7 @@
   <el-menu class="headbar" mode="horizontal">
     <div class="logobar">
       <img :src="img_logo" class="logo-icon">
-      <span>立颖纺纱MES</span>
+      <span>立颍纺纱MES</span>
     </div>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
