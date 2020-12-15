@@ -1,5 +1,5 @@
 <template> 
-  <div class="board-layout">
+  <a class="board-layout" @click="jumpToMachineList">
     <el-card class="box-card" :body-style="{ padding: '14px 0 0', height: '200px' }">
       <div slot="header">
         <div style="margin:-18px -20px;" class="clearfix">
@@ -25,23 +25,46 @@
         </div>
       </div>
     </el-card>
-  </div>
+  </a>
 </template>
 <script>
-
+  import store from '../../../store'
+  const defaultParams = {
+    machine_id: [],
+    shift_id: null,
+    start_time: '',
+    end_time: '',
+    page: 1,
+    limit: 5
+  }
   export default {
     name: 'BoardCard',
     props: ['item'],
     data() {
       return {
-        spindleList: []
+        itemParams: Object.assign({}, defaultParams),
+        spindleList: [],
+        dashboardTime: null
       }
     },
     created() {
       console.log(this.item)
+      this.handleParams()
       this.handleSpindle()
     },
     methods: {
+      handleParams(){
+        let self = this
+        setTimeout(()=>{
+          console.log(store)
+          self.dashboardTime = store.getters.dashboardTime
+          self.itemParams.start_time = store.getters.dashboardTime.start_time
+          self.itemParams.end_time = store.getters.dashboardTime.end_time
+        },1000)
+        console.log(this.dashboardTime)
+        this.itemParams.machine_id = [];
+        this.itemParams.machine_id.push(this.item.machine_id)
+      },
       handleSpindle(){
         this.spindleList = []
         this.item.rot_id.forEach(element => {
@@ -55,12 +78,16 @@
                 }
               }
         });
+      },
+      jumpToMachineList(){
+        this.$router.push({path:'/quality/machine',query:this.itemParams});
       }
     }
   }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
   .board-layout {
+    pointer-events: auto;
     .box-card {
       position: relative;
       margin-bottom: 20px;

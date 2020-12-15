@@ -16,7 +16,9 @@
       return {
         dashboardTime:{
           path: '/SHboard',
-          displayTime: ''
+          displayTime: '',
+          start_time: '',
+          end_time: ''
         },
         dashboardList:[],
         dashboardParams: Object.assign({},defaultDashboardParams)
@@ -60,12 +62,15 @@
           this.dashboardParams.start_time = startTime;
           this.dashboardParams.end_time = endTime;
           displayTime = `${displayPeriod} ( ${endTime} )`
+          this.dashboardTime.end_time = endTime
         } else{
           let startTime = this.formatSelectDate(date.start_time)
           let endTime = this.formatSelectDate(date.end_time)
           this.dashboardParams.start_time = startTime;
           this.dashboardParams.end_time = endTime;
           displayTime = `${displayPeriod} ( ${startTime} 至 ${endTime} )`
+          this.dashboardTime.start_time = startTime;
+          this.dashboardTime.end_time = endTime
         }
         this.dashboardParams.type = 'sh'
         this.dashboardTime.displayTime = displayTime

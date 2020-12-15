@@ -177,7 +177,7 @@ import { formatDate } from '@/utils/date'
       }
     },
     created() {
-      this.initDate();
+      this.defaultInit();
       console.log(this.listQuery)
       this.getMachineDropDownList();
       this.getMachineTableList();
@@ -217,11 +217,16 @@ import { formatDate } from '@/utils/date'
         }
         return formatDate(unformatDate, 'yyyy-MM-dd')
       },
-      initDate() {
+      defaultInit() {
         this.listQuery.timeValue?this.listQuery.timeValue[0] = this.startDate:this.listQuery.timeValue=[];
         this.listQuery.timeValue?this.listQuery.timeValue[1] = this.endDate:this.listQuery.timeValue=[];
         this.getListParams.start_time = this.startDate;
         this.getListParams.end_time = this.endDate;
+        if(this.$route.query){
+          this.getListParams = this.$route.query
+          this.listQuery.machine_id = this.$route.query.machine_id
+          this.listQuery.shift_id = this.$route.query.shift_id
+        }
       },
       getMachineTableList() {
         getMachineList(this.getListParams).then(response => {
