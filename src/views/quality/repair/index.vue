@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card class="filter-container" shadow="never">
       <div class="form-search" style="margin-top: 10px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="140px" :label-position="'right'">
+        <el-form :inline="true" :model="getListParams" size="small" label-width="140px" :label-position="'right'">
           <el-row :gutter="20">
             <el-col :span="7">
               <el-form-item label="维修状态：">
-                <el-select v-model="listQuery.status" placeholder="请选择维修状态" clearable>
+                <el-select v-model="getListParams.status" placeholder="请选择维修状态" clearable>
                   <el-option
                     v-for="item in repairStatus"
                     :key="item.label"
@@ -16,14 +16,20 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="10">
+            <el-col :span="12">
               <el-form-item label="时间：">
                 <el-date-picker
-                  v-model="listQuery.timeValue"
-                  type="daterange"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  range-separator="至">
+                  v-model="getListParams.start_time"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择开始日期">
+                </el-date-picker>
+                &nbsp;至&nbsp;
+                <el-date-picker
+                  v-model="getListParams.end_time"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择结束日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
@@ -31,7 +37,7 @@
           <el-row :gutter="20">
             <el-col :span="13">
               <el-form-item label="维修类型：">
-                <el-select v-model="listQuery.maintenance_type" placeholder="请选择维修类型" clearable>
+                <el-select v-model="getListParams.maintenance_type" placeholder="请选择维修类型" clearable>
                   <el-option
                     v-for="item in repairTypeList"
                     :key="item.label"
@@ -108,9 +114,9 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.limit"
+        :page-size="getListParams.limit"
         :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.page"
+        :current-page.sync="getListParams.page"
         :total="total">
       </el-pagination>
     </div>
@@ -121,14 +127,6 @@
   import { searchRepairList, getRepairTypeList } from '@/api/repairInfo'
   import { formatDate } from '@/utils/date'
 
-  const defaultListQuery = {
-    status: '',
-    rot_id: '',
-    maintenance_type: '',
-    timeValue: [],
-    page: 1,
-    limit: 5
-  };
   const defaultParams = {
     status: '',
     rot_id: '',
@@ -142,7 +140,6 @@
     name: "productList",
     data() {
       return {
-        listQuery: Object.assign({}, defaultListQuery),
         getListParams: Object.assign({}, defaultParams),
         repairList: [],
         total: null,
@@ -158,7 +155,6 @@
       }
     },
     created() {
-      this.defaultInit()
       this.getRepairDropDownList();
       this.getRepairList();
     },
@@ -191,12 +187,6 @@
         }
         return formatDate(unformatDate, 'yyyy-MM-dd')
       },
-      defaultInit() {
-        this.listQuery.timeValue?this.listQuery.timeValue[0] = this.startDate:this.listQuery.timeValue=[];
-        this.listQuery.timeValue?this.listQuery.timeValue[1] = this.endDate:this.listQuery.timeValue=[];
-        this.getListParams.start_time = this.startDate;
-        this.getListParams.end_time = this.endDate;
-      },
       getRepairDropDownList(){
         getRepairTypeList().then(response => {
           console.log(response)
@@ -211,36 +201,23 @@
         })
       },
       handleSearchList() {
-        this.settingSearchParams();
         this.getRepairList();
       },
-      settingSearchParams(){
-        this.listQuery.page = 1;
-        for (const key in this.listQuery) {
-          if(this.getListParams.hasOwnProperty(key)){
-          this.getListParams[key] = this.listQuery[key]
-          }
-        }
-        this.getListParams.start_time = this.listQuery.timeValue?this.listQuery.timeValue[0]:''
-        this.getListParams.end_time = this.listQuery.timeValue?this.listQuery.timeValue[1]:''
-      },
+
       handleResetSearch() {
         this.selectMachineValue = [];
-        this.listQuery = Object.assign({}, defaultListQuery);
+        this.getListParams = Object.assign({}, defaultParams);
       },
       handleCreateBill() {
         this.$router.push({path:'/quality/repairCreate'});
       },
 
       handleSizeChange(val) {
-        this.listQuery.page = 1;
-        this.listQuery.limit = val;
         this.getListParams.page = 1;
         this.getListParams.limit = val;
         this.getRepairList();
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val;
         this.getListParams.page = val;
         this.getRepairList();
       }

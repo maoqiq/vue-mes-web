@@ -1,5 +1,5 @@
 <template> 
-  <a class="board-layout" @click="jumpToMachineList">
+  <a class="board-layout" @click="handleJumpMachineList">
     <el-card class="box-card" :body-style="{ padding: '14px 0 0' }">
       <div slot="header">
         <div style="margin:-18px -20px;" class="clearfix">
@@ -106,7 +106,6 @@ import store from '../../../store'
           self.itemParams.start_time = store.getters.dashboardTime.start_time
           self.itemParams.end_time = store.getters.dashboardTime.end_time
         },1000)
-        console.log(this.dashboardTime)
         this.itemParams.machine_id = [];
         this.itemParams.machine_id.push(this.item.machine_id)
       },
@@ -130,7 +129,7 @@ import store from '../../../store'
         this.dataEmpty = false;
         this.loading = false
       },
-      jumpToMachineList(){
+      handleJumpMachineList(){
         console.log(this.dashboardTime)
         console.log(this.itemParams)
         this.$router.push({path:'/quality/machine',query:this.itemParams});

@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card class="filter-container" shadow="never">
       <div class="form-search" style="margin-top: 10px">
-        <el-form :inline="true" :model="listQuery" size="small" label-width="120px" :label-position="'right'">
+        <el-form :inline="true" :model="getListParams" size="small" label-width="120px" :label-position="'right'">
           <el-row :gutter="20">
             <el-col :span="6">
               <el-form-item label="指标类型：">
-                <el-select v-model="listQuery.pointType" placeholder="请选择指标类型" @change="searchByType" clearable>
+                <el-select v-model="pointType" placeholder="请选择指标类型" @change="searchByType" clearable>
                   <el-option
                     v-for="item in pointTypeList"
                     :key="item.value"
@@ -18,7 +18,7 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="报警等级：">
-                <el-select v-model="listQuery.alarm_level" multiple placeholder="请选择报警等级" clearable>
+                <el-select v-model="getListParams.alarm_level" multiple placeholder="请选择报警等级" clearable>
                   <el-option
                     v-for="item in 4"
                     :key="item"
@@ -30,7 +30,7 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="气流纺机编号：">
-                <el-select v-model="listQuery.machine_id" multiple placeholder="请选择气流纺机" clearable>
+                <el-select v-model="getListParams.machine_id" multiple placeholder="请选择气流纺机" clearable>
                   <el-option
                     v-for="item in machineOptions"
                     :key="item.device_id"
@@ -45,18 +45,23 @@
             <el-col :span="12">
               <el-form-item label="提交时间：">
                 <el-date-picker
-                  v-model="listQuery.timeValue"
-                  type="daterange"
+                  v-model="getListParams.start_time"
+                  type="date"
                   value-format="yyyy-MM-dd"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  range-separator="至">
+                  placeholder="选择开始日期">
+                </el-date-picker>
+                &nbsp;至&nbsp;
+                <el-date-picker
+                  v-model="getListParams.end_time"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择结束日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="7">
               <el-form-item label="班次编号：">
-                <el-select v-model="listQuery.shift_id" placeholder="全部" clearable>
+                <el-select v-model="getListParams.shift_id" placeholder="全部" clearable>
                   <el-option
                     v-for="item in 4"
                     :key="item"
@@ -97,7 +102,7 @@
         <el-table-column label="消息序号" align="center">
           <template slot-scope="scope">{{scope.row.message_id}}</template>
         </el-table-column>
-        <el-table-column :label="listQuery.pointType.label" align="center">
+        <el-table-column :label="pointType.label" align="center">
           <template slot-scope="scope">{{scope.row.count}}</template>
         </el-table-column>
         <el-table-column label="报警等级" align="center">
@@ -140,9 +145,9 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         layout="total, sizes,prev, pager, next,jumper"
-        :page-size="listQuery.limit"
+        :page-size="getListParams.limit"
         :page-sizes="[5,10,15]"
-        :current-page.sync="listQuery.page"
+        :current-page.sync="getListParams.page"
         :total="total">
       </el-pagination>
     </div>
@@ -153,18 +158,6 @@
   import { machineDropDown } from '@/api/machinePanelList'
   import { getWarningList } from '@/api/warningList'
   import { formatDate } from '@/utils/date'
-  const defaultListQuery = {
-    pointType: {
-      value: 'yc',
-      label:'电清切疵总数( YC )'
-    },
-    alarm_level: '',
-    machine_id: [],
-    shift_id: null,
-    timeValue: [],
-    page: 1,
-    limit: 5
-  };
   const defaultParams = {
     indicate_type: 'yc',
     alarm_level: '',
@@ -187,9 +180,12 @@
     name: "productList",
     data() {
       return {
-        listQuery: Object.assign({}, defaultListQuery),
         getListParams: Object.assign({}, defaultParams),
         linkParams: Object.assign({},defaultLinkParams),
+        pointType: {
+          value: 'yc',
+          label:'电清切疵总数( YC )'
+        },
         pointTypeList: [{
           value: 'yc',
           label:'电清切疵总数( YC )'
@@ -215,19 +211,10 @@
       }
     },
     created() {
-      this.initDate();
-      console.log(this.getListParams)
       this.getMachineDropDownList();
       this.getWarningTableList();
     },
     watch: {
-      // selectMachineValue: function (newValue) {
-      //   if (newValue != null && newValue.length == 2) {
-      //     this.listQuery.machineIds = newValue[1];
-      //   } else {
-      //     this.listQuery.machineIds = null;
-      //   }
-      // }
     },
     filters: {
       formatDate(time) {
@@ -262,12 +249,6 @@
         }
         return formatDate(unformatDate, 'yyyy-MM-dd')
       },
-      initDate() {
-        this.listQuery.timeValue?this.listQuery.timeValue[0] = this.startDate:this.listQuery.timeValue=[];
-        this.listQuery.timeValue?this.listQuery.timeValue[1] = this.endDate:this.listQuery.timeValue=[];
-        this.getListParams.start_time = this.startDate;
-        this.getListParams.end_time = this.endDate;
-      },
       getWarningTableList() {
         this.warningList = [];
         getWarningList(this.getListParams).then(response => {
@@ -289,34 +270,19 @@
         this.handleSearchList();
       },
       handleSearchList() {
-        this.settingSearchParams();
         this.getWarningTableList();
       },
-      settingSearchParams(){
-        this.listQuery.page = 1;
-        for (const key in this.listQuery) {
-          if(this.getListParams.hasOwnProperty(key)){
-          this.getListParams[key] = this.listQuery[key]
-          }
-        }
-        this.getListParams.start_time = this.listQuery.timeValue?this.listQuery.timeValue[0]:'',
-        this.getListParams.end_time = this.listQuery.timeValue?this.listQuery.timeValue[1]:'',
-        console.log(this.getListParams)
-      },
+
       handleResetSearch() {
         this.selectMachineValue = [];
-        this.listQuery = Object.assign({}, defaultListQuery);
-        // this.getListParams = Object.assign({}, defaultParams);
+        this.getListParams = Object.assign({}, defaultParams);
       },
       handleSizeChange(val) {
-        this.listQuery.page = 1;
-        this.listQuery.limit = val;
         this.getListParams.page = 1;
         this.getListParams.limit = val;
         this.getWarningTableList();
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val;
         this.getListParams.page = val;
         this.getWarningTableList();
       },

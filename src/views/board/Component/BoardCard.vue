@@ -1,5 +1,5 @@
 <template> 
-  <a class="board-layout" @click="jumpToMachineList">
+  <a class="board-layout" @click="handleJumpMachineList">
     <el-card class="box-card" :body-style="{ padding: '14px 0 0', height: '200px' }">
       <div slot="header">
         <div style="margin:-18px -20px;" class="clearfix">
@@ -48,7 +48,6 @@
       }
     },
     created() {
-      console.log(this.item)
       this.handleParams()
       this.handleSpindle()
     },
@@ -56,19 +55,16 @@
       handleParams(){
         let self = this
         setTimeout(()=>{
-          console.log(store)
           self.dashboardTime = store.getters.dashboardTime
           self.itemParams.start_time = store.getters.dashboardTime.start_time
           self.itemParams.end_time = store.getters.dashboardTime.end_time
         },1000)
-        console.log(this.dashboardTime)
         this.itemParams.machine_id = [];
         this.itemParams.machine_id.push(this.item.machine_id)
       },
       handleSpindle(){
         this.spindleList = []
         this.item.rot_id.forEach(element => {
-          console.log(element)
           for (const key in element) {
                 if (element.hasOwnProperty(key)) {
                   let spindleItem = {}
@@ -79,7 +75,7 @@
               }
         });
       },
-      jumpToMachineList(){
+      handleJumpMachineList(){
         this.$router.push({path:'/quality/machine',query:this.itemParams});
       }
     }

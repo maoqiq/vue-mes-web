@@ -42,7 +42,6 @@
       },
       getConfigData(){
         getDashboardConfig({type: 'yc'}).then(response=>{
-          console.log(response)
           this.handleTimeDisplay(response.result)
         })
       },
@@ -80,7 +79,6 @@
 
       getData(){
         getDashboardList(this.dashboardParams).then(response => {
-          console.log(response)
           this.dashboardList = []
           for (const key in response.result) {
             if (response.result.hasOwnProperty(key)) {
@@ -93,7 +91,6 @@
               }
               resultItem.machine_id = key
               resultItem.type = this.dashboardParams.type
-              console.log(resultItem)
               this.dashboardList.push(resultItem)
             }
           }
