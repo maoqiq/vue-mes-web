@@ -239,8 +239,7 @@ import { formatDate } from '@/utils/date'
         this.getListParams.start_time = this.startDate;
         this.getListParams.end_time = this.endDate;
         if(this.$route.query){
-          this.getListParams.machine_id = this.$route.query.machine_id
-          this.getListParams.shift_id = this.$route.query.shift_id
+          this.getListParams = this.$route.query
           this.listQuery.machine_id = this.$route.query.machine_id
           this.listQuery.shift_id = this.$route.query.shift_id
         }

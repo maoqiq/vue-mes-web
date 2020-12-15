@@ -47,6 +47,7 @@
                 <el-date-picker
                   v-model="listQuery.timeValue"
                   type="daterange"
+                  value-format="yyyy-MM-dd"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   range-separator="至">
@@ -106,12 +107,18 @@
         </el-table-column>
         <el-table-column label="锭位号码(ROT)" align="center">
           <template slot-scope="scope">
-            {{scope.row.rot_id}}
+            <el-button
+              size="mini" type="text"
+              @click="handleJumpSpindleList(scope.$index, scope.row)">{{scope.row.rot_id}}
+            </el-button>
           </template>
         </el-table-column>
         <el-table-column label="所属气流纺机号" align="center">
           <template slot-scope="scope">
-            {{scope.row.machine_id}}
+            <el-button
+              size="mini" type="text"
+              @click="handleJumpMachineList(scope.$index, scope.row)">{{scope.row.machine_id}}
+            </el-button>
           </template>
         </el-table-column>
         <el-table-column label="所属班次号" align="center">
@@ -168,12 +175,21 @@
     page: 1,
     limit: 5
   };
+  const defaultLinkParams = {
+    machine_id: [],
+    shift_id: null,
+    start_time: '',
+    end_time: '',
+    page: 1,
+    limit: 5
+  };
   export default {
     name: "productList",
     data() {
       return {
         listQuery: Object.assign({}, defaultListQuery),
         getListParams: Object.assign({}, defaultParams),
+        linkParams: Object.assign({},defaultLinkParams),
         pointTypeList: [{
           value: 'yc',
           label:'电清切疵总数( YC )'
@@ -304,12 +320,23 @@
         this.getListParams.page = val;
         this.getWarningTableList();
       },
-      handleJumpDetail(index,row){
-        console.log("handleShowOriginData",row);
-        this.$router.push({path:'/quality/spindleDetail',query:{id:row.id}})
+      handleJumpMachineList(index,row){
+        console.log(row)
+        this.handleLinkParams(row)
+        this.$router.push({path:'/quality/machine',query:this.linkParams});
       },
-      handleCreateRepair(index,row){
-        this.$router.push({path:'/quality/repairCreate',query:{id:row.id}});
+      handleJumpSpindleList(index,row){
+        this.handleLinkParams(row)
+        this.linkParams.rot_id = row.rot_id
+        this.$router.push({path:'/quality/spindle',query:this.linkParams});
+      },
+      handleLinkParams(row){
+        console.log(this.getListParams)
+        this.linkParams.start_time = this.getListParams.start_time
+        this.linkParams.end_time = this.getListParams.end_time
+        this.linkParams.shift_id = row.shift_id
+        this.linkParams.machine_id = []
+        this.linkParams.machine_id.push(row.machine_id)
       }
     }
   }
