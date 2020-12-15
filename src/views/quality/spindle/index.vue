@@ -75,13 +75,16 @@
                 v-loading="listLoading"
                 border>
         <!-- <el-table-column type="selection" width="60" align="center"></el-table-column> -->
-        <el-table-column label="锭位号码（ROT）" width="150" align="center">
+        <el-table-column label="气流纺机序号" width="126" align="center">
+          <template slot-scope="scope">{{scope.row.machine_id}}</template>
+        </el-table-column>
+        <el-table-column label="锭位号码（ROT）" width="142" align="center">
           <template slot-scope="scope">{{scope.row.rot_id}}</template>
         </el-table-column>
-        <el-table-column label="状态" width="128" align="center">
+        <el-table-column label="状态" align="center">
           <template slot-scope="scope">{{scope.row.status?scope.row.status:'-'}}</template>
         </el-table-column>
-        <el-table-column label="预警等级" width="128" align="center">
+        <el-table-column label="预警等级" width="110" align="center">
           <template slot-scope="scope">
             <div class="alarm-shape"
               :class="{
@@ -96,7 +99,7 @@
             {{scope.row.date|formatDate}}
           </template>
         </el-table-column>
-        <el-table-column label="班次" width="128" align="center">
+        <el-table-column label="班次" align="center">
           <template slot-scope="scope">
             {{scope.row.shift_id}}
           </template>
@@ -106,16 +109,16 @@
             {{scope.row.yc}}
           </template>
         </el-table-column>
-        <el-table-column label="接头数（PI）" width="128" align="center">
+        <el-table-column label="接头数（PI）" width="122" align="center">
           <template slot-scope="scope">{{scope.row.pi}}</template>
         </el-table-column>
-        <el-table-column label="效率（EFF）" width="128" align="center">
+        <el-table-column label="效率（EFF）" width="122" align="center">
           <template slot-scope="scope">{{scope.row.eff}}</template>
         </el-table-column>
         <el-table-column label="异常班次（SH）" width="128" align="center">
           <template slot-scope="scope">{{scope.row.sh}}</template>
         </el-table-column>
-        <el-table-column label="操作" width="220" align="center">
+        <el-table-column label="操作" width="210" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
