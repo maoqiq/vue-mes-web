@@ -119,18 +119,6 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="pagination-container">
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        layout="total, sizes,prev, pager, next,jumper"
-        :page-size="getListParams.limit"
-        :page-sizes="[5,10,15]"
-        :current-page.sync="getListParams.page"
-        :total="total">
-      </el-pagination>
-    </div>
   </div>
 </template>
 <script>
@@ -240,19 +228,6 @@ import { formatDate } from '@/utils/date'
       handleResetSearch() {
         this.selectMachineValue = [];
         this.getListParams = Object.assign({}, defaultParams)
-      },
-
-      handleSizeChange(val) {
-        this.getListParams.page = 1;
-        this.getListParams.limit = val;
-        this.getListParams.page = 1;
-        this.getListParams.limit = val;
-        this.getMachineTableList();
-      },
-      handleCurrentChange(val) {
-        this.getListParams.page = val;
-        this.getListParams.page = val;
-        this.getMachineTableList();
       },
       handleJumpOriginData(index,row){
         console.log("handleShowOriginData",row);

@@ -63,8 +63,8 @@
     </el-card>
     <el-card class="margin-bottom">
       <div class="info-container">
-        <p>INTERMEDIATE REPORT</p>
-        <source-tab :item="items&&items.INTERMEDIATE_REPORT"></source-tab>
+        <p>SHIFT REPORT</p>
+        <source-tab :item="items&&items.SHIFT_REPORT"></source-tab>
       </div>
     </el-card>
     <el-card>
